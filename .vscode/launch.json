@@ -1,0 +1,58 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - writer",
+            "request": "launch",
+            "mainClass": "writer",
+            "projectName": "Distributed-peer-bulletin-board_462a0405"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Computer<Distributed-peer-bulletin-board_462a0405>",
+            "request": "launch",
+            "mainClass": "Computer",
+            "projectName": "Distributed-peer-bulletin-board_462a0405"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-factorial<Distributed-peer-bulletin-board_462a0405>",
+            "request": "launch",
+            "mainClass": "factorial",
+            "projectName": "Distributed-peer-bulletin-board_462a0405"
+        },
+        {
+            "type": "java",
+            "name": "Node1",
+            "request": "launch",
+            "mainClass": "ring",
+            "args": " -c Test2/cfg1.txt -i Test2/in1.txt -o out1.txt",
+            "projectName": "Distributed-peer-bulletin-board_462a0405"
+        },
+        {
+            "type": "java",
+            "name": "Node2",
+            "request": "launch",
+            "mainClass": "ring",
+            "args": " -c Test2/cfg2.txt -i Test2/in1.txt -o out2.txt",
+            "projectName": "Distributed-peer-bulletin-board_462a0405"
+        }
+    ],
+
+    "compounds":[
+        {
+            "name": "multipleNodes",
+            "configurations":["Node1", "Node2"]
+        }
+    ]
+}
