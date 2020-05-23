@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Set;
+import java.util.Iterator;
 
 //Sockets
 import java.net.DatagramSocket;
@@ -29,7 +31,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SelectableChannel;
 
 
-@SuppressWarnings("serial")
+// @SuppressWarnings("serial")
 public class ring extends Exception {
 
     // list of class variables 
@@ -51,7 +53,9 @@ public class ring extends Exception {
     static InetAddress local_ip;
     static InetSocketAddress address;
     static InetSocketAddress to_address;
-    // static Selector select;
+    static Selector select;
+    static SelectionKey key;
+    static int readyChannels;
 
     // Map {time_in_milliseconds : message_string}. They are in sorted order because of treemap
     static SortedMap<Integer, String> messages_map = new TreeMap<Integer, String>();
@@ -61,101 +65,66 @@ public class ring extends Exception {
         cmdLineArgsParser(args); // 8
         configFileParser(configScan, config); // 9
         inputFileParser(inputScan, input); //14
-
         setupSocket(my_port);
 
+        // Sending message
         String message = "Hello World";
         ByteBuffer buf = Charset.forName("UTF-8").encode(message);
-        System.out.println("Sending buffer" + buf);
-        if(my_port == 3460){
-            outputWriter.write(message + "Sending preceding message to port 3456");
-            outputWriter.close();
-        }
-        
-        datagramChannel.send(buf, to_address );
+        // outputWriter.println(message + "Sending preceding message to port 3456 ");
+        to_address = new InetSocketAddress(local_ip, 3456);
+        datagramChannel.send(buf, to_address);
         buf.clear();
 
-        // packet = new DatagramPacket(buf, buf.length, local_ip, 3456);
-        // socket.send(packet);
+        int count = 0;
+        while(count < 1000){
+            readyChannels = select.selectNow();
 
+            if(readyChannels == 0) continue;
+            Set<SelectionKey> selectedKeys = select.selectedKeys();
+            // outputWriter.println(selectedKeys);
+            Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 
-        
-        ByteBuffer received = ByteBuffer.allocate(100);
-        // DatagramPacket received_packet = new DatagramPacket(received, received.length);
-        // if(my_port == 3456){
-            System.out.println("before" + received);
-            datagramChannel.receive(received);
-            received.flip();
-            System.out.println("after " + received);
-            String received_string = new String(received.array(),0,received.remaining(), "UTF-8");
-            System.out.println("converted to string length " + received_string.length());
-        // }
-        
-        
-        System.out.println(received_string);
-        outputWriter.write("Received String :" + received_string);
-        // received.clear();
-        
-        // socket.receive(received_packet);
-        // outputWriter.write("The received packet is :::" + data(received));
-        // if(my_port == 3456){
-            
-        //     System.out.println("my port is " + my_port);
-        // }
+            while(keyIterator.hasNext()) {
+
+                SelectionKey temp_key = keyIterator.next();
+                // outputWriter.println(temp_key.isReadable() + " " + temp_key.isWritable());
+                if (temp_key.isReadable()) {
+                    // a channel is ready for reading
+                    ByteBuffer received = ByteBuffer.allocate(100);
+                    datagramChannel.receive(received);
+                    received.flip();
+                    String received_string = new String(received.array(),0,received.remaining(), "UTF-8");
+                    outputWriter.println("Received String : " + received_string);
+                    received.clear();
+                } 
+                // else if (temp_key.isWritable()) {
+                //     // a channel is ready for writing
+                // }
+                keyIterator.remove();
+                count++;
+            }
+        }
         outputWriter.close();
+        System.out.println("closing file");    
 
     }
-    // public static StringBuilder data(byte[] a) 
-    // { 
-    //     if (a == null) 
-    //         return null; 
-    //     StringBuilder ret = new StringBuilder(); 
-    //     int i = 0; 
-    //     while (a[i] != 0) 
-    //     { 
-    //         ret.append((char) a[i]); 
-    //         i++; 
-    //     } 
-    //     return ret; 
-    // } 
-
-    // public static StringBuilder data(Byte[] a) 
-    // { 
-    //     if (a == null) 
-    //         return null; 
-    //     StringBuilder ret = new StringBuilder(); 
-    //     int i = 0; 
-    //     while (a[i] != 0) 
-    //     { 
-    //         ret.append((char) a[i]); 
-    //         i++; 
-    //     } 
-    //     return ret; 
-    // } 
 
     public static void setupSocket(int my_port){
-
         try{
             datagramChannel = DatagramChannel.open();
-            
-            // socket = new DatagramSocket(my_port);
             socket = datagramChannel.socket();
-            // select = Selector.open();
-            // datagramChannel.configureBlocking(false);
-            // datagramChannel.register(select, SelectionKey.OP_ACCEPT);
+            select = Selector.open();
+            datagramChannel.configureBlocking(false);
+            key = datagramChannel.register(select, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
             local_ip = InetAddress.getLocalHost();
             address = new InetSocketAddress(local_ip, my_port);
             socket.bind(address);
-            
             // to be sent to this address
-            to_address = new InetSocketAddress(local_ip, 3456);
         }
         catch(Exception e){
             System.out.println("Error while setting up the socket");
             e.printStackTrace();
         }
-
-
     }
 
     // 14th function
