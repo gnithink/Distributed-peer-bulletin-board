@@ -51,7 +51,7 @@ public class ring extends Exception {
     static InetAddress local_ip;
     static InetSocketAddress address;
     static InetSocketAddress to_address;
-    static Selector select;
+    // static Selector select;
 
     // Map {time_in_milliseconds : message_string}. They are in sorted order because of treemap
     static SortedMap<Integer, String> messages_map = new TreeMap<Integer, String>();
@@ -140,9 +140,9 @@ public class ring extends Exception {
             
             // socket = new DatagramSocket(my_port);
             socket = datagramChannel.socket();
-            select = Selector.open();
-            datagramChannel.configureBlocking(false);
-            datagramChannel.register(select, SelectionKey.OP_ACCEPT);
+            // select = Selector.open();
+            // datagramChannel.configureBlocking(false);
+            // datagramChannel.register(select, SelectionKey.OP_ACCEPT);
             local_ip = InetAddress.getLocalHost();
             address = new InetSocketAddress(local_ip, my_port);
             socket.bind(address);
