@@ -1,4 +1,8 @@
 public class Election extends Packet {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     int election_id;
     int best_client_id;
     Election(int s_id, int election_id, int best_client_id){

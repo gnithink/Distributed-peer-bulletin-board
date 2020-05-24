@@ -1,4 +1,8 @@
 public class Probe extends Packet {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     int reply_id;
 
     Probe(int s_id, int reply_id ){

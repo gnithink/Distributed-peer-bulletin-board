@@ -4,8 +4,11 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.File;
 import java.io.IOException;
+
+import java.io.OutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
@@ -24,14 +27,23 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 // NIO sockets
 import java.nio.channels.DatagramChannel;
-import java.nio.charset.Charset;
+// import java.nio.charset.Charset;
 import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SelectableChannel;
 
+// Serializing objects
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 
-// @SuppressWarnings("serial")
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.BufferedInputStream;
+
+
+
+@SuppressWarnings("serial")
 public class ring extends Exception {
 
     // list of class variables 
@@ -44,9 +56,17 @@ public class ring extends Exception {
 
     static ArrayList<Integer> ports_array = new ArrayList<Integer>(); //10
     static int my_port = 0; // 11
-    static int join_time = 0; // 12
-    static int leave_time = 0; // 13
 
+
+    // Timing and clocks
+    static long join_time; // 12
+    static long leave_time ; // 13
+    static boolean running ; //25
+    static long start_time; // 26
+    static long stop_time; //27
+    static long elapsed_time; //28
+
+    // DataGram Channel and Select
     static DatagramChannel datagramChannel; 
     static DatagramSocket socket;
     static DatagramPacket packet;
@@ -57,26 +77,70 @@ public class ring extends Exception {
     static SelectionKey key;
     static int readyChannels;
 
+    // Bytearray Buffers and 
+    static int BUFFER_SIZE = 1024; // 16
+
+    static ByteBuffer send_byte_buffer; // 17
+    static byte[] send_byte; // 18
+    static ByteArrayOutputStream BOS_SEND; // 19
+    static ObjectOutputStream OOS_SEND; // 20
+
+    static ByteBuffer receive_buffer; // 21
+    static byte[] receive_byte; // 22
+    static ByteArrayInputStream BIS_REC; // 23
+    static ObjectInputStream OIS_REC; // 24
+    static Object read_object;
+
     // Map {time_in_milliseconds : message_string}. They are in sorted order because of treemap
     static SortedMap<Integer, String> messages_map = new TreeMap<Integer, String>();
 
     public static void main(String[] args) throws Exception { // 7
 
+        
+
         cmdLineArgsParser(args); // 8
         configFileParser(configScan, config); // 9
         inputFileParser(inputScan, input); //14
-        setupSocket(my_port);
+        Thread.sleep(join_time);
+
+        // System.out.println("The process with id " + my_port + "is awake" + "after" + join_time );
+        start_clock();
+        setupSocket(my_port); //15
 
         // Sending message
-        String message = "Hello World";
-        ByteBuffer buf = Charset.forName("UTF-8").encode(message);
-        // outputWriter.println(message + "Sending preceding message to port 3456 ");
-        to_address = new InetSocketAddress(local_ip, 3456);
-        datagramChannel.send(buf, to_address);
-        buf.clear();
+        // if(my_port != 3456){
+        String message_post = "hello from port " + my_port;
+        Post post = new Post(my_port, 0, message_post);
 
-        int count = 0;
-        while(count < 1000){
+        BOS_SEND = new ByteArrayOutputStream();
+        OOS_SEND = new ObjectOutputStream(BOS_SEND);
+        OOS_SEND.writeObject(post);
+        OOS_SEND.flush();
+
+        send_byte = new byte[BUFFER_SIZE];
+        send_byte = BOS_SEND.toByteArray();
+        send_byte_buffer = ByteBuffer.allocate(BUFFER_SIZE);
+        send_byte_buffer = ByteBuffer.wrap(send_byte);
+
+        to_address = new InetSocketAddress(local_ip, 3456);
+        datagramChannel.send(send_byte_buffer, to_address);
+        send_byte_buffer.clear();
+        OOS_SEND.close();
+        // }
+
+
+    
+        // String message = "Hello World";
+        // ByteBuffer buf = Charset.forName("UTF-8").encode(message);
+        // // outputWriter.println(message + "Sending preceding message to port 3456 ");
+        // to_address = new InetSocketAddress(local_ip, 3456);
+        // datagramChannel.send(buf, to_address);
+        // buf.clear();
+
+        System.out.println("Entering while loop");
+        // int count = 0;
+        // while(count < 1000)
+        while(get_elapsed_time() < leave_time){
             readyChannels = select.selectNow();
 
             if(readyChannels == 0) continue;
@@ -90,18 +154,34 @@ public class ring extends Exception {
                 // outputWriter.println(temp_key.isReadable() + " " + temp_key.isWritable());
                 if (temp_key.isReadable()) {
                     // a channel is ready for reading
-                    ByteBuffer received = ByteBuffer.allocate(100);
-                    datagramChannel.receive(received);
-                    received.flip();
-                    String received_string = new String(received.array(),0,received.remaining(), "UTF-8");
-                    outputWriter.println("Received String : " + received_string);
-                    received.clear();
+                    receive_buffer = ByteBuffer.allocate(BUFFER_SIZE);
+                    datagramChannel.receive(receive_buffer);
+                    receive_buffer.flip();
+                    receive_byte = new byte[receive_buffer.remaining()];
+                    receive_buffer.get(receive_byte,0,receive_byte.length);
+
+
+                    BIS_REC = new ByteArrayInputStream(receive_byte);
+                    OIS_REC = new ObjectInputStream(new BufferedInputStream(BIS_REC));
+                    read_object = OIS_REC.readObject();
+                    Post p = (Post) read_object;
+                    OIS_REC.close();
+                    outputWriter.println(p.s_id +" "+p.message );
+
+                    
+                    // ByteBuffer received = ByteBuffer.allocate(100);
+                    // datagramChannel.receive(received);
+                    // received.flip();
+                    // String received_string = new String(received.array(),0,received.remaining(), "UTF-8");
+                    // outputWriter.println("Received String : " + received_string);
+                    // received.clear();
                 } 
                 // else if (temp_key.isWritable()) {
                 //     // a channel is ready for writing
                 // }
                 keyIterator.remove();
-                count++;
+                // count++;
+
             }
         }
         outputWriter.close();
@@ -174,10 +254,11 @@ public class ring extends Exception {
             line_split = line[1].split(":");
             join_time = ((Integer.parseInt(line_split[0])*60) + Integer.parseInt(line_split[1])) * 1000;
 
+
             // splitting the line by space line[0] = leave_time. line[1] = minutes:seconds
             line = configScan.nextLine().split(" ");
             line_split = line[1].split(":");
-            join_time = ((Integer.parseInt(line_split[0])*60) + Integer.parseInt(line_split[1])) * 1000;
+            leave_time = ((Integer.parseInt(line_split[0])*60) + Integer.parseInt(line_split[1])) * 1000;
 
             //filling up the ports array from my_ports + 1 to end_port
             for (int i = my_port +1; i <= end_port; i++){
@@ -260,4 +341,22 @@ public class ring extends Exception {
         }
 
     }
+
+    public static void start_clock() {
+        start_time = System.currentTimeMillis();
+        running = true;
+    }
+    public static void stop_clock() {
+        stop_time = System.currentTimeMillis();
+        running = false;
+    }
+    public static long get_elapsed_time() {
+        if (running) {
+          elapsed_time = System.currentTimeMillis() - start_time;
+        } else {
+          elapsed_time = stop_time - start_time;
+        }
+        return elapsed_time;
+    }
+
 }
