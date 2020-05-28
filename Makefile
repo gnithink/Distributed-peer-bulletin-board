@@ -36,6 +36,8 @@ rmout:
 	$(RM) *.txt
 	lsof -i:3460 -t | xargs kill
 	lsof -i:3456 -t | xargs kill
+	lsof -i:3457 -t | xargs kill
+	lsof -i:3461 -t | xargs kill
 
 
 

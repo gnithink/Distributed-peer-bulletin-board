@@ -19,19 +19,17 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 
 //Sockets
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-// NIO sockets
-import java.nio.channels.DatagramChannel;
-// import java.nio.charset.Charset;
-import java.nio.ByteBuffer;
-import java.nio.channels.Selector;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.SelectableChannel;
+import java.net.SocketTimeoutException;
+
 
 // Serializing objects
 import java.io.ByteArrayOutputStream;
@@ -40,8 +38,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.BufferedInputStream;
-
-
 
 @SuppressWarnings("serial")
 public class ring extends Exception {
@@ -57,7 +53,6 @@ public class ring extends Exception {
     static ArrayList<Integer> ports_array = new ArrayList<Integer>(); //10
     static int my_port = 0; // 11
 
-
     // Timing and clocks
     static long join_time; // 12
     static long leave_time ; // 13
@@ -67,139 +62,293 @@ public class ring extends Exception {
     static long elapsed_time; //28
 
     // DataGram Channel and Select
-    static DatagramChannel datagramChannel; 
-    static DatagramSocket socket;
+    static DatagramSocket socket = null;
     static DatagramPacket packet;
     static InetAddress local_ip;
     static InetSocketAddress address;
     static InetSocketAddress to_address;
-    static Selector select;
-    static SelectionKey key;
-    static int readyChannels;
+
 
     // Bytearray Buffers and 
     static int BUFFER_SIZE = 1024; // 16
 
-    static ByteBuffer send_byte_buffer; // 17
+ 
     static byte[] send_byte; // 18
     static ByteArrayOutputStream BOS_SEND; // 19
     static ObjectOutputStream OOS_SEND; // 20
 
-    static ByteBuffer receive_buffer; // 21
+    
     static byte[] receive_byte; // 22
     static ByteArrayInputStream BIS_REC; // 23
     static ObjectInputStream OIS_REC; // 24
-    static Object read_object;
+    static Object received_packet_object = null; //25
+
+    // Node Discovery
+    // unique id for each packet sent. Just increment the value after every packet sent.
+    static int packet_id = 0;
+    static int next_hop = Integer.MAX_VALUE;
+    static int previous_hop = -1;
+    static boolean receive_probe_zero = false;
+    static boolean receive_probe_ack = false;
+    static boolean receive_probe_nak = false;
+
+    // start and end port also used to to create ports array
+    static int start_port;
+    static int end_port;
+    
+
+    // List of sets to for error checking 
+    static SortedSet<Integer> received_nak_set = new TreeSet<Integer>(); 
+    static SortedSet<Integer> received_probes_set = new TreeSet<Integer>();
+    static SortedSet<Integer> received_ack_set = new TreeSet<Integer>();
+    static SortedSet<Integer> sent_probe_set = new TreeSet<Integer>();
+    static SortedSet<Integer> received_response_set = new TreeSet<Integer>();
+    static SortedSet<Integer> sent_ack_set = new TreeSet<Integer>();
+    static SortedSet<Integer> sent_nak_set = new TreeSet<Integer>();
 
     // Map {time_in_milliseconds : message_string}. They are in sorted order because of treemap
     static SortedMap<Integer, String> messages_map = new TreeMap<Integer, String>();
 
-    public static void main(String[] args) throws Exception { // 7
+    // Receive Thread
+    // making it static throws an error. So keeping it private
+    receive_thread recv_messages_till_timeout;
 
-        
+    // Sending messages Thread
+    send_thread send_messages;
 
+    public static void main(String[] args) throws Exception{
+        Thread.sleep(join_time);
         cmdLineArgsParser(args); // 8
         configFileParser(configScan, config); // 9
         inputFileParser(inputScan, input); //14
-        Thread.sleep(join_time);
-
-        // System.out.println("The process with id " + my_port + "is awake" + "after" + join_time );
         start_clock();
-        setupSocket(my_port); //15
+        setupSocket(my_port);
+        outputWriter.println("Hello World");
+        
+        ring RING = new ring();
+        
 
-        // Sending message
-        // if(my_port != 3456){
-        String message_post = "hello from port " + my_port;
-        Post post = new Post(my_port, 0, message_post);
+
+        try{
+        ring_function(RING);
+        
+        }
+        catch (Exception e){
+            System.out.println("Error calling ring_function");
+            e.printStackTrace();
+        }
+        // System.out.println(received_probes_set);
+        
+
+    }
+
+    class send_thread extends Thread{
+        int to_send_port;
+        Probe probe_packet;
+        int temp_node;
+        @Override
+        public void run(){
+            try{
+                receive_probe_ack = false;
+                for (int i = 0; i < ports_array.size(); i++){
+                    to_send_port = ports_array.get(i);
+                    probe_packet = new Probe(my_port, packet_id);
+                    packet_id++;
+                    send_packet(to_send_port, probe_packet);
+                    Thread.sleep(50);
+                    
+                }
+                Thread.sleep(2000);
+                // System.out.println("AT send thread " + received_probes_set);
+                Iterator<Integer> iterator = received_probes_set.iterator();
+                while(iterator.hasNext()){
+                    temp_node = iterator.next();
+                    if(temp_node == previous_hop){
+                        ProbeAck ack = new ProbeAck(my_port, packet_id);
+                        packet_id++;
+                        send_packet(previous_hop, ack);   
+                        Thread.sleep(50);
+                    }
+                    else{
+                        ProbeNak nak = new ProbeNak(my_port, packet_id);
+                        packet_id++;
+                        send_packet(temp_node, nak);
+                        Thread.sleep(50);
+
+                    }
+                }
+                System.out.println("\n" + my_port + " " + received_response_set);
+                
+            }
+
+            
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            
+            
+
+        }
+    }
+
+    public void send(){
+        send_messages = new send_thread();
+        send_messages.start();
+        
+    }
+
+    class receive_thread extends Thread{
+        @Override
+        public void run(){
+            try{
+                long time_out = 2000;
+                Packet recv_packet = null;
+                long recv_timer = System.currentTimeMillis();
+                while(System.currentTimeMillis() - recv_timer < time_out){
+                    recv_packet = (Packet) receive_packet();
+
+                    if (recv_packet == null){
+                        continue;
+                    }
+                    
+                    if(recv_packet.m_id == 10){
+                        if(!received_probes_set.contains(recv_packet.s_id) ){
+                            outputWriter.println("PROBE received from " + recv_packet.s_id);
+                        }
+                        received_probes_set.add(recv_packet.s_id);
+                        
+                        if(previous_hop == -1 || Math.floorMod(recv_packet.s_id - my_port, end_port - start_port) > Math
+                        .floorMod(previous_hop - my_port, end_port - start_port)){
+                            
+                            
+                            if(!sent_ack_set.contains(recv_packet.s_id)){
+                                outputWriter.println("SENDED ACK to " + recv_packet.s_id);
+                            }
+                            sent_ack_set.add(recv_packet.s_id); 
+                            previous_hop = recv_packet.s_id;
+                            outputWriter.println(get_time_to_print() + " previous hop is changed to client " + previous_hop);
+                            receive_probe_ack = true;
+                            recv_packet = null;
+                            
+                        }
+                    }
+                }
+                
+
+                time_out = 5000;
+                long ack_nak_timer = System.currentTimeMillis();
+
+                while(System.currentTimeMillis() - ack_nak_timer < time_out){
+                    recv_packet = (Packet) receive_packet();
+
+                    if (recv_packet == null){
+                        continue;
+                    }
+                    if(recv_packet.m_id == 11){
+
+                        if(!received_ack_set.contains(recv_packet.s_id)){
+                            outputWriter.println("ACK received from " + recv_packet.s_id);
+                            
+                        }
+                        received_response_set.add(recv_packet.s_id);
+                        received_ack_set.add(recv_packet.s_id);
+                        
+                        if(next_hop == Integer.MAX_VALUE || Math.floorMod(recv_packet.s_id - my_port, end_port - start_port) > Math
+                        .floorMod(next_hop - my_port, end_port - start_port)){
+                            
+                            outputWriter.println(get_time_to_print() + "next hop is changed to client " + recv_packet.s_id);
+                            next_hop = recv_packet.s_id;
+                            recv_packet = null;
+                        }
+                        
+                    }
+                    else if(recv_packet.m_id == 12){
+                        
+                        if(!received_nak_set.contains(recv_packet.s_id)){
+                            outputWriter.println("NAK received from " + recv_packet.s_id );
+                            
+                        }
+                        received_response_set.add(recv_packet.s_id);
+                        received_nak_set.add(recv_packet.s_id);
+                        recv_packet = null;
+                    }
+                    if(next_hop != Integer.MAX_VALUE && previous_hop != -1){
+                        outputWriter.println("\n" + " myport: " + my_port + " next hop: " + next_hop + " previous hop " + previous_hop + " found");
+                        break;
+                    }
+                }
+                System.out.println("\n" + my_port + " " + received_response_set);
+                System.out.println("\n" + " myport: " + my_port + " next hop: " + next_hop + " previous hop " + previous_hop + " found");
+                outputWriter.close();
+
+            }
+            catch (SocketTimeoutException e){
+                e.printStackTrace();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+    public void receive(){
+        recv_messages_till_timeout = new receive_thread();
+        recv_messages_till_timeout.start();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void ring_function(ring RING){
+        RING.receive();
+        RING.send();
+        // RING.recv_messages_till_timeout.stop();
+        // RING.send_messages.stop();
+    }
+
+
+
+    public static void send_packet(int port, Object message_packet) throws Exception { //26
+        
 
         BOS_SEND = new ByteArrayOutputStream();
         OOS_SEND = new ObjectOutputStream(BOS_SEND);
-        OOS_SEND.writeObject(post);
+        OOS_SEND.writeObject(message_packet);
         OOS_SEND.flush();
 
         send_byte = new byte[BUFFER_SIZE];
         send_byte = BOS_SEND.toByteArray();
-        send_byte_buffer = ByteBuffer.allocate(BUFFER_SIZE);
-        send_byte_buffer = ByteBuffer.wrap(send_byte);
+        packet = new DatagramPacket(send_byte, send_byte.length);
+        packet.setAddress(InetAddress.getByName("localhost"));
+        packet.setPort(port);
+        socket.send(packet);
 
-        to_address = new InetSocketAddress(local_ip, 3456);
-        datagramChannel.send(send_byte_buffer, to_address);
-        send_byte_buffer.clear();
         OOS_SEND.close();
-        // }
 
 
-    
-        // String message = "Hello World";
-        // ByteBuffer buf = Charset.forName("UTF-8").encode(message);
-        // // outputWriter.println(message + "Sending preceding message to port 3456 ");
-        // to_address = new InetSocketAddress(local_ip, 3456);
-        // datagramChannel.send(buf, to_address);
-        // buf.clear();
-
-        System.out.println("Entering while loop");
-        // int count = 0;
-        // while(count < 1000)
-        while(get_elapsed_time() < leave_time){
-            readyChannels = select.selectNow();
-
-            if(readyChannels == 0) continue;
-            Set<SelectionKey> selectedKeys = select.selectedKeys();
-            // outputWriter.println(selectedKeys);
-            Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
-
-            while(keyIterator.hasNext()) {
-
-                SelectionKey temp_key = keyIterator.next();
-                // outputWriter.println(temp_key.isReadable() + " " + temp_key.isWritable());
-                if (temp_key.isReadable()) {
-                    // a channel is ready for reading
-                    receive_buffer = ByteBuffer.allocate(BUFFER_SIZE);
-                    datagramChannel.receive(receive_buffer);
-                    receive_buffer.flip();
-                    receive_byte = new byte[receive_buffer.remaining()];
-                    receive_buffer.get(receive_byte,0,receive_byte.length);
+    }
 
 
-                    BIS_REC = new ByteArrayInputStream(receive_byte);
-                    OIS_REC = new ObjectInputStream(new BufferedInputStream(BIS_REC));
-                    read_object = OIS_REC.readObject();
-                    Post p = (Post) read_object;
-                    OIS_REC.close();
-                    outputWriter.println(p.s_id +" "+p.message );
 
-                    
-                    // ByteBuffer received = ByteBuffer.allocate(100);
-                    // datagramChannel.receive(received);
-                    // received.flip();
-                    // String received_string = new String(received.array(),0,received.remaining(), "UTF-8");
-                    // outputWriter.println("Received String : " + received_string);
-                    // received.clear();
-                } 
-                // else if (temp_key.isWritable()) {
-                //     // a channel is ready for writing
-                // }
-                keyIterator.remove();
-                // count++;
 
-            }
-        }
-        outputWriter.close();
-        System.out.println("closing file");    
+    public static Object receive_packet() throws Exception{ // 27
+        
+        receive_byte = new byte[BUFFER_SIZE];
+        packet = new DatagramPacket(receive_byte, receive_byte.length);
+        socket.receive(packet);
 
+        BIS_REC = new ByteArrayInputStream(receive_byte);
+        OIS_REC = new ObjectInputStream(new BufferedInputStream(BIS_REC));
+        received_packet_object = OIS_REC.readObject();
+
+        OIS_REC.close();
+        return received_packet_object;    
     }
 
     public static void setupSocket(int my_port){
         try{
-            datagramChannel = DatagramChannel.open();
-            socket = datagramChannel.socket();
-            select = Selector.open();
-            datagramChannel.configureBlocking(false);
-            key = datagramChannel.register(select, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-            local_ip = InetAddress.getLocalHost();
-            address = new InetSocketAddress(local_ip, my_port);
-            socket.bind(address);
-            // to be sent to this address
+            socket = new DatagramSocket(my_port);
+            // socket.setSoTimeout(10);
         }
         catch(Exception e){
             System.out.println("Error while setting up the socket");
@@ -235,8 +384,7 @@ public class ring extends Exception {
     public static void configFileParser(Scanner configScan, File config){
         String[] line;
         String[] line_split;
-        int start_port;
-        int end_port;
+        
           
         try{
             // splitting line by space line[0] = client_port . line[1] = start_port-end_port
@@ -359,4 +507,27 @@ public class ring extends Exception {
         return elapsed_time;
     }
 
+    public static String get_time_to_print(){
+        String string_sec;
+        String string_min;
+        String string_time;
+
+        long milli_time = System.currentTimeMillis() - start_time;
+        int total_time_sec = (int) milli_time/1000;
+        int time_min = (int) total_time_sec / 60;
+        int time_sec = (int) total_time_sec % 60;
+
+        if(time_sec < 10){
+            string_sec = "0" + String.valueOf(time_sec) +":";
+        }
+        else{
+            string_sec = String.valueOf(time_sec) + ":";
+        }
+        string_min = String.valueOf(time_min) + ":";
+        string_time = string_min + string_sec;
+        return string_time;
+    }
+
+
+    
 }
