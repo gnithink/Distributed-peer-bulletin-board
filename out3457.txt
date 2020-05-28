@@ -1,0 +1,10 @@
+Hello World
+PROBE received from 3456
+SENDED ACK to 3456
+0:00: previous hop is changed to client 3456
+PROBE received from 3460
+PROBE received from 3461
+ACK received from 3460
+0:02:next hop is changed to client 3460
+
+ myport: 3457 next hop: 3460 previous hop 3456 found
