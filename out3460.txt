@@ -1,0 +1,50 @@
+0:00: next hop is changed to client 3461
+ Sleeping for random time 478 ms
+0:00: previous hop is changed to client 3457
+0:00: started election, send election message to client 3461
+next hop is 3461  election starter 3457
+0:00: relayed election message, replaced leader 
+0:05: ring is broken
+ Sleeping for random time 490 ms
+next hop is 3461  election starter 3457
+0:05: relayed election message, replaced leader 
+0:06: started election, send election message to client 3461
+0:11: ring is broken
+ Sleeping for random time 218 ms
+0:12: started election, send election message to client 3461
+0:17: ring is broken
+ Sleeping for random time 9 ms
+0:17: started election, send election message to client 3461
+0:22: ring is broken
+ Sleeping for random time 699 ms
+next hop is 3461  election starter 3457
+0:22: relayed election message, replaced leader 
+0:23: started election, send election message to client 3461
+0:27: ring is broken
+ Sleeping for random time 678 ms
+next hop is 3461  election starter 3457
+0:28: relayed election message, replaced leader 
+0:28: started election, send election message to client 3461
+0:33: ring is broken
+ Sleeping for random time 510 ms
+0:34: started election, send election message to client 3461
+next hop is 3461  election starter 3457
+0:34: relayed election message, replaced leader 
+0:39: ring is broken
+ Sleeping for random time 958 ms
+next hop is 3461  election starter 3457
+0:39: relayed election message, replaced leader 
+0:40: started election, send election message to client 3461
+0:44: ring is broken
+ Sleeping for random time 224 ms
+0:44: started election, send election message to client 3461
+next hop is 3461  election starter 3457
+0:45: relayed election message, replaced leader 
+0:50: ring is broken
+ Sleeping for random time 43 ms
+0:50: started election, send election message to client 3461
+next hop is 3461  election starter 3457
+0:50: relayed election message, replaced leader 
+0:55: ring is broken
+ Sleeping for random time 253 ms
+0:55: started election, send election message to client 3461

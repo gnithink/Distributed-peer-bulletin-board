@@ -1,10 +1,43 @@
-Hello World
-PROBE received from 3456
-SENDED ACK to 3456
-0:00: previous hop is changed to client 3456
-PROBE received from 3460
-PROBE received from 3461
-ACK received from 3460
-0:02:next hop is changed to client 3460
-
- myport: 3457 next hop: 3460 previous hop 3456 found
+0:00: next hop is changed to client 3460
+ Sleeping for random time 418 ms
+0:00: started election, send election message to client 3460
+0:05: ring is broken
+ Sleeping for random time 488 ms
+0:05: previous hop is changed to client 3456
+0:05: started election, send election message to client 3460
+next hop is 3460  election starter 3456
+0:06: relayed election message, replaced leader 
+next hop is 3460  election starter 3456
+0:12: relayed election message, replaced leader 
+next hop is 3460  election starter 3456
+0:17: relayed election message, replaced leader 
+0:22: ring is broken
+ Sleeping for random time 523 ms
+next hop is 3460  election starter 3456
+0:22: relayed election message, replaced leader 
+0:22: started election, send election message to client 3460
+0:28: ring is broken
+ Sleeping for random time 249 ms
+next hop is 3460  election starter 3456
+0:28: relayed election message, replaced leader 
+0:28: started election, send election message to client 3460
+0:33: ring is broken
+ Sleeping for random time 706 ms
+next hop is 3460  election starter 3456
+0:34: relayed election message, replaced leader 
+0:34: started election, send election message to client 3460
+0:39: ring is broken
+ Sleeping for random time 328 ms
+next hop is 3460  election starter 3456
+0:39: relayed election message, replaced leader 
+0:39: started election, send election message to client 3460
+0:44: ring is broken
+ Sleeping for random time 341 ms
+0:45: started election, send election message to client 3460
+0:49: ring is broken
+ Sleeping for random time 843 ms
+next hop is 3460  election starter 3456
+0:50: relayed election message, replaced leader 
+0:50: started election, send election message to client 3460
+next hop is 3460  election starter 3456
+0:56: relayed election message, replaced leader 

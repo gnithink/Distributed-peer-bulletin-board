@@ -27,6 +27,8 @@ import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+
+
 // NIO sockets
 import java.nio.channels.DatagramChannel;
 // import java.nio.charset.Charset;
@@ -363,6 +365,7 @@ public class ring extends Exception {
         //     SelectionKey temp_key = keyIterator.next();
         //     keyIterator.remove();
         //     if (temp_key.isWritable()) {
+            
                 BOS_SEND = new ByteArrayOutputStream();
                 OOS_SEND = new ObjectOutputStream(BOS_SEND);
                 OOS_SEND.writeObject(message_packet);
@@ -386,18 +389,30 @@ public class ring extends Exception {
 
     public static Object receive_packet() throws Exception{ // 27
         long read_timer = System.currentTimeMillis();
+
         readyChannels = select.select();
+
         // key.interestOps(0);
         // key = datagramChannel.register(select, SelectionKey.OP_READ);
+
         Set<SelectionKey> selectedKeys = select.selectedKeys();
+        
         // outputWriter.println(key.readyOps() & key.OP_READ);
         Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
         while(keyIterator.hasNext()) {
             SelectionKey temp_key = keyIterator.next();
+
+            // if(temp_key.isWritable()){
+
+            // }
+            // if(temp_key.isAcceptable())){
+
+            // }
             if (temp_key.isReadable()) { 
                 receive_buffer = ByteBuffer.allocate(BUFFER_SIZE);
                 datagramChannel.receive(receive_buffer);
                 receive_buffer.flip();
+
                 receive_byte = new byte[receive_buffer.remaining()];
                 receive_buffer.get(receive_byte,0,receive_byte.length);
 
@@ -419,7 +434,10 @@ public class ring extends Exception {
             socket = datagramChannel.socket();
             select = Selector.open();
             datagramChannel.configureBlocking(false);
+
+            // interest ops
             key = datagramChannel.register(select, SelectionKey.OP_WRITE | SelectionKey.OP_READ );
+
             local_ip = InetAddress.getLocalHost();
             address = new InetSocketAddress(local_ip, my_port);
             socket.bind(address);
