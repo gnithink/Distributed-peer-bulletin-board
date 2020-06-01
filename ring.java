@@ -12,6 +12,14 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
+import java.lang.IllegalArgumentException;
+
+// NIO sockets
+import java.nio.channels.DatagramChannel;
+import java.nio.ByteBuffer;
+import java.nio.channels.Selector;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SelectableChannel;
 
 // for data structures for storing ports, input_messages
 import java.util.ArrayList;
@@ -21,8 +29,6 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import jdk.jshell.spi.ExecutionControl.EngineTerminationException;
 
 // Printing timer format
 import java.text.SimpleDateFormat;
@@ -54,6 +60,11 @@ import java.util.Random;
 @SuppressWarnings("serial")
 public class ring extends Exception {
 
+    //NIO sockets byte buffers
+    static ByteBuffer send_byte_buffer; // 17
+    static ByteBuffer receive_buffer; // 21
+    static DatagramChannel datagramChannel;
+
     // list of class variables 
     static File output; // 1
     static File config; // 2
@@ -63,35 +74,35 @@ public class ring extends Exception {
     static Scanner inputScan; // 6
 
     static ArrayList<Integer> ports_array = new ArrayList<Integer>(); //10
-    static int my_port = -1; // 11
+    static int my_port; // 11
 
     // Timing and clocks
-    static long join_time; // 12
-    static long leave_time ; // 13
-    static long start_time; // need for the function get_time_to_print
-    static long stop_time;
-    static long elapsed_time;
+    static long join_time = -1; // 12
+    static long leave_time = -1 ; // 13
+    static long start_time = -1; // need for the function get_time_to_print
+    static long stop_time = -1;
+    static long elapsed_time = -1;
     static boolean running;
 
 
     // DataGram Channel and Select
     static DatagramSocket socket = null;
-    static DatagramPacket packet;
-    static InetAddress local_ip;
-    static InetSocketAddress address;
-    static InetSocketAddress to_address;
+    static DatagramPacket packet = null;
+    static InetAddress local_ip = null;
+    static InetSocketAddress address = null;
+    static InetSocketAddress to_address = null;
 
 
     // Bytearray Buffers and received packet object
     static int BUFFER_SIZE = 1024; // 16
  
-    static byte[] send_byte; // 18
-    static ByteArrayOutputStream BOS_SEND; // 19
-    static ObjectOutputStream OOS_SEND; // 20
+    static byte[] send_byte = null; // 18
+    static ByteArrayOutputStream BOS_SEND = null; // 19
+    static ObjectOutputStream OOS_SEND = null; // 20
 
-    static byte[] receive_byte; // 22
-    static ByteArrayInputStream BIS_REC; // 23
-    static ObjectInputStream OIS_REC; // 24
+    static byte[] receive_byte = null; // 22
+    static ByteArrayInputStream BIS_REC = null; // 23
+    static ObjectInputStream OIS_REC = null; // 24
     static Object received_packet_object = null; //25
 
     // Node Discovery
@@ -126,28 +137,41 @@ public class ring extends Exception {
     send_thread send_messages;
 
     //All statement to be logged are concatenated to one string LOG
-    static String LOG = "";
+    public static String LOG = "";
 
     // Election mechanism
     Random random_timeout = new Random();
     static boolean is_leader_elected = false;
     static int election_id; // this election id is used for the token id as well while generating the token
     static int token_id = -1;
-    static long election_time_stamp = -1 ; // used to get messages that we supposed to be before each election
+    static long election_time_stamp = -1 ; 
+    static long token_time_stamp = -1 ; // used to get messages that we supposed to be posted before each election
     static SortedSet<Integer> known_tokens = new TreeSet<Integer>();
-    static long tat_start_time;
-    static long tat_end_time;
-    static long TAT;
-    static long ring_broken_timeout = 5000;
+    static long tat_start_time = -1;
+    static long tat_end_time = -1;
+    static long TAT = -1;
+    static long ring_broken_timeout = 500;
 
-    public static void main(String[] args) throws Exception{
+    // For fixing node dynamics\
+    static int received_port = -1;
+
+    public static void main(String[] args) throws Exception, IllegalArgumentException{
         // System.out.printf("%d %d %d", ring.packet_id ,ring.start_port , ring.end_port);
-        Thread.sleep(join_time);
         start_clock();
         cmdLineArgsParser(args); // 8
         configFileParser(configScan, config); // 9
-        inputFileParser(inputScan, input); //14
-        setupSocket(my_port);
+        inputFileParser(inputScan, input); //14 
+        Thread.sleep(join_time);
+        try{   
+            setupSocket(my_port);
+        }
+        catch (IllegalArgumentException e){
+            System.out.println("Error setting up the socket");
+            e.printStackTrace();
+            System.exit(1);
+        }
+        // System.out.println(my_port);        
+        
         ring RING = new ring();
         try{
             bulletin_board_cycle(RING);
@@ -157,9 +181,13 @@ public class ring extends Exception {
             e.printStackTrace();
             System.exit(1);
         }
+        
+        // LOG += messages_map.headMap((long)30000);
         outputWriter.print(LOG);
         outputWriter.close();
         socket.close();
+        
+        System.out.println("Everything complete");
     }
 
     class send_thread extends Thread{
@@ -178,15 +206,13 @@ public class ring extends Exception {
                     probe_packet = new Probe(my_port, packet_id);
                     packet_id++;
                     send_packet(to_send_port, probe_packet);
-                    Thread.sleep(50);
+                    Thread.sleep(15);
                 }
                 catch (Exception e){
                     System.out.println("Error while sending probe packet");
                     e.printStackTrace();
                 }
                 if(probing_handshake_success){
-                    // LOG += "probing successful " + " next_hop " + next_hop + " previous_hop " + previous_hop + "\n"; 
-                    // next_hop = ports_array.get(i);
                     break;
                 }
             }
@@ -203,12 +229,13 @@ public class ring extends Exception {
                     System.exit(1);
                 }
                 try{
-                    
+                    // if(my_port== 3456){
                     election_id = random_timeout.nextInt(100000);
                     election_time_stamp = System.currentTimeMillis() - start_time;
                     Election election_packet =  new Election(my_port, election_id, my_port);
                     send_packet(next_hop, election_packet);
                     LOG += get_time_to_print() + " started election, send election message to client " + next_hop + "\n";
+                    // }
                     
                 }
                 catch (Exception e){
@@ -224,13 +251,13 @@ public class ring extends Exception {
         @Override
         public void run(){
             
+            
             Packet recv_packet = null;
             long recv_timer = System.currentTimeMillis();
             while(System.currentTimeMillis() - recv_timer < leave_time){
                 try{
                     recv_packet = (Packet) receive_packet();
 
-                    
                     if(recv_packet.m_id == 10){ // PROBE
                         // if(!received_probes_set.contains(recv_packet.s_id) ){
                         //     LOG += "PROBE received from " + recv_packet.s_id + "\n";
@@ -244,14 +271,25 @@ public class ring extends Exception {
                             // sent_ack_set.add(recv_packet.s_id); 
 
                             previous_hop = recv_packet.s_id;
+
                             LOG += get_time_to_print() + " previous hop is changed to client " + previous_hop + "\n";
                             ProbeAck ack = new ProbeAck(my_port, packet_id);
                             packet_id++;
                             send_packet(recv_packet.s_id, ack);
                         }
-                        
+
+                        else if(previous_hop > my_port){
+                            if(received_port < my_port){
+                                previous_hop = received_port;
+                                LOG += get_time_to_print() + " previous hop is changed to client " + previous_hop + "\n";
+                                LOG += "I am the first node in the ring now " + my_port + "\n" ;
+                                ProbeAck ack = new ProbeAck(my_port, packet_id);
+                                packet_id++;
+                                send_packet(previous_hop, ack);
+                            }
+                        }                        
                         else if( Math.floorMod(recv_packet.s_id - my_port, end_port - start_port) > Math
-                        .floorMod(previous_hop - my_port, end_port - start_port)){
+                        .floorMod(previous_hop - my_port, end_port - start_port) || received_port == previous_hop){
                             
                             
                             // if(!sent_ack_set.contains(recv_packet.s_id)){
@@ -267,15 +305,14 @@ public class ring extends Exception {
                             
                         }
                         else{
-                            // if(!sent_nak_set.contains(recv_packet.s_id)){
-                            //     LOG += "SENDED NAK to " + recv_packet.s_id + "\n";
-                            // }
-                            // sent_nak_set.add(recv_packet.s_id);
+                            if(!sent_nak_set.contains(recv_packet.s_id)){
+                                LOG += "SENDED NAK to " + recv_packet.s_id + "\n";
+                            }
+                            sent_nak_set.add(recv_packet.s_id);
 
                             ProbeNak nak = new ProbeNak(my_port, packet_id);
                             packet_id++;
                             send_packet(recv_packet.s_id, nak);
-
                         }
                     }
                         
@@ -284,14 +321,17 @@ public class ring extends Exception {
                         //     LOG += "ACK received from " + recv_packet.s_id + "\n";
                         // }
                         // received_ack_set.add(recv_packet.s_id);
+
                         if(next_hop == -1){
                             next_hop = recv_packet.s_id;
                             
                             LOG += get_time_to_print() + " next hop is changed to client " + next_hop + "\n";
                             probing_handshake_success = true;
                         }
+
+
                         
-                        else if(Math.floorMod(recv_packet.s_id - my_port, end_port - start_port) > Math
+                        else if(Math.floorMod(recv_packet.s_id - my_port, end_port - start_port) < Math
                         .floorMod(next_hop - my_port, end_port - start_port)){
                             
                             next_hop = recv_packet.s_id;
@@ -301,49 +341,55 @@ public class ring extends Exception {
                         }
                     }
 
+                    else if(recv_packet.m_id == 12){
+                        if(!received_ack_set.contains(recv_packet.s_id) ){
+                            LOG += "NAK received from " + recv_packet.s_id + "\n";
+                        }
+                        received_ack_set.add(recv_packet.s_id);
+                    }
 
-                    // if ack has not yet been received or the received probe id is not the previous hop
-                    if(!probing_handshake_success || recv_packet.s_id != previous_hop){
+                    if(!probing_handshake_success){
                         continue;
                     }
 
-                    if(recv_packet.m_id == 20 && !is_leader_elected ){
+                    if(recv_packet.m_id == 20 && !is_leader_elected){
                         Election recv_election = (Election) recv_packet;
-                        if( my_port > recv_election.s_id){
+                        
+                        if( my_port > recv_election.best_client_id){
                             recv_election.best_client_id = my_port;
                             LOG += "next hop is " + next_hop +  "  election starter " + recv_election.s_id + "\n"; 
-                            LOG += get_time_to_print() +" relayed election message, replaced leader \n";  
-                            send_packet(next_hop, recv_election);
-                            continue;
+                            LOG += get_time_to_print() +" relayed election message, replaced leader \n";
+                            Election temp_election = new Election(recv_election.s_id, recv_election.election_id, my_port);  
+                            send_packet(next_hop, temp_election);
+
                         }
-                        if(my_port < recv_election.s_id){
+                        else if(my_port < recv_election.best_client_id){
                             
-                            LOG += "next hop is " + next_hop +  "  election starter " + recv_election.s_id + "\n"; 
+                            // LOG += "next hop is " + next_hop +  "  election starter " + recv_election.s_id + "\n"; 
                             LOG += get_time_to_print() +" relayed election message, leader: client " + recv_election.best_client_id + "\n";
+                            // Election temp_election = new Election(recv_election.s_id, recv_election.election_id, recv_election.s_id);
                             send_packet(next_hop, recv_election);
-                            continue;
+                            
                         }
-                        if(my_port == recv_election.s_id) {
+                        else {
                             
                             Elected elected = new Elected(recv_election.s_id, recv_election.election_id, my_port);
-                            
-                            LOG += "ELECTED PACKET SENT";
                             packet_id++;
-                            is_leader_elected = true;
-                            send_packet(next_hop, elected);
+                            LOG += "ELECTED PACKET SENT \n";
                             
-                        }  
+                            
+                            send_packet(next_hop, elected);
+                        }
+                          
                     }
                     else if(recv_packet.m_id == 21){
                         Elected recv_elected = (Elected) recv_packet;
 
-                        if(recv_elected.leader_id < my_port){
+                        if(my_port < recv_elected.leader_id){
                             is_leader_elected = true;
                             send_packet(next_hop, recv_elected);
-                            
-
                         }
-                        else if (recv_elected.leader_id > my_port){
+                        else if (my_port > recv_elected.leader_id){
                             is_leader_elected = false;
                             send_packet(next_hop, recv_elected);
                             
@@ -351,54 +397,63 @@ public class ring extends Exception {
                         else if(recv_elected.leader_id == my_port){
                             LOG += get_time_to_print() + " leader selected\n";
                             token_id = recv_elected.election_id;
+                            is_leader_elected = true;
 
                             LOG += get_time_to_print() + " new token generated [" + token_id + "]\n"; 
                             send_messages();
                         }
                         
                     }
-                    else if(recv_packet.m_id == 30){
-                        token_id = election_id;
+                    if(!is_leader_elected){
+                        continue;
+                    }
+
+                    if(recv_packet.m_id == 30){
+                        Token recv_token = (Token) recv_packet;
+                        token_time_stamp = System.currentTimeMillis() - start_time;
+
+                        token_id = recv_token.token_id;
                         if(!known_tokens.contains(token_id)){
                             LOG += get_time_to_print() + " token [" + token_id + "] was received \n";
                         }
                         send_messages();
 
                     }
-                    else if(recv_packet.m_id == 0){
+                    else if(recv_packet.m_id == 0 && received_port == previous_hop ){
                         Post recv_post = (Post) recv_packet;
 
                         if(recv_post.s_id == my_port){
                             if(!messages_map.containsKey(recv_post.seq_no)){
-                                System.out.println("Message is not what was sent out");
+                                LOG += "Message is not what was sent out " + " same as msg_post_time " +recv_post.seq_no + "\n";
                             }
                             else{
                                 LOG += get_time_to_print() + " post \"" + recv_post.message + "\" was delivered to all successfully\n";
                                 messages_map.remove(recv_post.seq_no);
                                 tat_end_time = System.currentTimeMillis();
                                 TAT = tat_end_time - tat_start_time;
+                                // LOG += "TAT time is " + TAT  + "\n";
                                 if (TAT == 0){
-                                    TAT = 200;
+                                    TAT = 500;
                                 }
-                                ring_broken_timeout = TAT * 2;
+                                ring_broken_timeout = TAT * 10;
                                 send_messages();
                             }
                         }
                         else{
-                            LOG += get_time_to_print() + " post \"" + recv_post.message + "\" from client" + recv_post.s_id + " was relayed \n";
+                            LOG += get_time_to_print() + " post \"" + recv_post.message + "\" from client " + recv_post.s_id + " was relayed \n";
                             send_packet(next_hop, recv_post);
 
                         }
 
-                    } 
+                    }
 
-                    
-                       
                 }
                 catch (SocketTimeoutException e){
                     LOG += get_time_to_print() + " ring is broken\n";
+                    resetting_static_variables(); // resetting so that probing process can continue
                     send_messages = new send_thread();
                     send_messages.start();
+                    
                     // e.printStackTrace();
                 }
                 catch (Exception e){
@@ -410,9 +465,11 @@ public class ring extends Exception {
         }
     }
 
+    
+
     public void send_messages() throws Exception{
 
-        SortedMap<Long, String> messages_election_time = messages_map.headMap(election_time_stamp);
+        SortedMap<Long, String> messages_election_time = messages_map.headMap(token_time_stamp);
 
         if(messages_election_time.isEmpty()){
             Token token = new Token(my_port, token_id);
@@ -470,6 +527,7 @@ public class ring extends Exception {
         RING.send_messages.stop();
     }
 
+
     public static void send_packet(int port, Object message_packet) throws Exception { //26
         
 
@@ -494,22 +552,23 @@ public class ring extends Exception {
         receive_byte = new byte[BUFFER_SIZE];
         packet = new DatagramPacket(receive_byte, receive_byte.length);
         socket.receive(packet);
+        received_port = packet.getPort();
+        // LOG += "packet received from port " + received_port + " previous_hop " + previous_hop + "\n";
 
         BIS_REC = new ByteArrayInputStream(receive_byte);
         OIS_REC = new ObjectInputStream(new BufferedInputStream(BIS_REC));
         received_packet_object = OIS_REC.readObject();
 
         OIS_REC.close();
-        return received_packet_object;    
+        BIS_REC.close();
+        return received_packet_object;
+
     }
 
     public static void setupSocket(int my_port){
         try{
             socket = new DatagramSocket(my_port);
             socket.setSoTimeout((int) ring_broken_timeout); 
-            // socket timesout if no messages is received for 10 * TAT
-            // During the socket timeout exception the send_thread is restarted and probing messages are sent.
-            // The entire cycle continues. The receive thread is alive till the leave_time
         }
         catch(Exception e){
             System.out.println("Error while setting up the socket");
@@ -672,13 +731,9 @@ public class ring extends Exception {
         }
         return elapsed_time;
     }
-    private static SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
-	static {
-		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-	}
+   
 
     public static String get_time_to_print(){
-        // return "" + formatter.format(new Date(System.currentTimeMillis() - start_time)) + "";
 
         String string_sec;
         String string_min;
@@ -698,5 +753,48 @@ public class ring extends Exception {
         string_min = String.valueOf(time_min) + ":";
         string_time = string_min + string_sec;
         return string_time;
+    }
+
+
+    public static void resetting_static_variables(){
+
+        //NIO sockets byte buffers
+        send_byte_buffer = null; // 17
+        receive_buffer = null; // 21
+
+        // Timing and clock
+        send_byte = null; // 18
+    
+        receive_byte = null; // 22
+        received_packet_object = null; //25
+        // Not resetting previous and next hop to see if the issue gets fixed.
+        next_hop = -1;
+        previous_hop = -1;
+        probing_handshake_success = false;
+        sleep = 1000;
+
+        // List of sets to for error checking 
+        received_nak_set.clear(); 
+        received_probes_set.clear();
+        received_ack_set.clear();
+        sent_probe_set.clear();
+        received_response_set.clear();
+        sent_ack_set.clear();
+        sent_nak_set.clear();
+
+        is_leader_elected = false;
+        election_id = -1; // this election id is used for the token id as well while generating the token
+        token_id = -1;
+        election_time_stamp = -1 ; 
+        token_time_stamp = -1 ; // used to get messages that we supposed to be posted before each election
+        known_tokens.clear();
+        tat_start_time = -1;
+        tat_end_time = -1;
+        TAT = -1;
+        ring_broken_timeout = 500; // waits for 2 seconds to call socket timeout exception
+
+        // For fixing node dynamics
+        received_port = -1;
+
     }
 }

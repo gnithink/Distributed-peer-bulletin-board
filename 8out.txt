@@ -1,0 +1,58 @@
+0:00: previous hop is changed to client 5010
+0:00: previous hop is changed to client 5007
+I am the first node in the ring now 5008
+SENDED NAK to 5004
+0:00: ring is broken
+0:00: next hop is changed to client 5010
+ Sleeping for random time 67 ms
+0:01: started election, send election message to client 5010
+0:01: previous hop is changed to client 5010
+0:01: relayed election message, leader: client 5010
+0:01: token [32705] was received 
+0:01: token [32705] was sent to client 5010
+0:02: previous hop is changed to client 5006
+I am the first node in the ring now 5008
+0:04: previous hop is changed to client 5006
+SENDED NAK to 5004
+0:05: previous hop is changed to client 5006
+0:05: previous hop is changed to client 5006
+0:06: previous hop is changed to client 5006
+0:07: previous hop is changed to client 5006
+0:08: previous hop is changed to client 5006
+0:08: previous hop is changed to client 5006
+0:10: previous hop is changed to client 5006
+0:11: previous hop is changed to client 5006
+0:12: previous hop is changed to client 5006
+0:13: previous hop is changed to client 5006
+0:14: previous hop is changed to client 5006
+0:16: ring is broken
+0:16: previous hop is changed to client 5006
+0:16: next hop is changed to client 5010
+ Sleeping for random time 26 ms
+0:16: started election, send election message to client 5010
+0:16: relayed election message, leader: client 5010
+0:16: post "N6_M1 5" from client 5006 was relayed 
+0:16: token [7404] was received 
+0:16: token [7404] was sent to client 5010
+0:16: post "N10_M1 15" from client 5010 was relayed 
+0:17: post "N8_M1 17" was sent
+0:17: post "N8_M1 17" was delivered to all successfully
+0:20: post "N8_M2 20" was sent
+0:20: post "N8_M2 20" was delivered to all successfully
+0:20: post "N4_M1 20" from client 5004 was relayed 
+0:20: post "N6_M2 20" from client 5006 was relayed 
+0:21: post "N6_M3 21" from client 5006 was relayed 
+0:22: post "N4_M2 22" from client 5004 was relayed 
+0:22: post "N6_M4 22" from client 5006 was relayed 
+0:22: post "N10_M2 22" from client 5010 was relayed 
+0:30: post "N8_M3 30" was sent
+0:30: post "N8_M3 30" was delivered to all successfully
+0:39: post "N4_M3 39" from client 5004 was relayed 
+0:39: post "N10_M3 39" from client 5010 was relayed 
+0:40: post "N8_M4 40" was sent
+0:40: post "N8_M4 40" was delivered to all successfully
+0:51: post "N4_M3 51" from client 5004 was relayed 
+0:54: post "N4_M4 54" from client 5004 was relayed 
+0:55: post "N6_M5 55" from client 5006 was relayed 
+0:56: post "N8_M5 56" was sent
+0:56: post "N8_M5 56" was delivered to all successfully

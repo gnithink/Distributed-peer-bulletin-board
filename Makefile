@@ -34,10 +34,13 @@ clean:
 
 rmout:
 	$(RM) *.txt
-	lsof -i:3460 -t | xargs kill
-	lsof -i:3456 -t | xargs kill
-	lsof -i:3457 -t | xargs kill
-	lsof -i:3461 -t | xargs kill
+	lsof -i:5005 -t | xargs kill
+	lsof -i:5004 -t | xargs kill
+	lsof -i:5006 -t | xargs kill
+	lsof -i:5008 -t | xargs kill
+	lsof -i:5010 -t | xargs kill
+	lsof -i:5002 -t | xargs kill
+
 
 build:
 	javac Post.java Probe.java ProbeAck.java ProbeNak.java Election.java Elected.java Token.java ring.java

@@ -1,0 +1,143 @@
+0:00: previous hop is changed to client 5010
+0:00: next hop is changed to client 5006
+NAK received from 5008
+ Sleeping for random time 306 ms
+0:00: started election, send election message to client 5006
+0:01: ring is broken
+0:01: next hop is changed to client 5006
+ Sleeping for random time 639 ms
+0:02: ring is broken
+0:02: next hop is changed to client 5006
+ Sleeping for random time 790 ms
+0:02: started election, send election message to client 5006
+0:02: ring is broken
+0:02: next hop is changed to client 5006
+ Sleeping for random time 259 ms
+0:02: started election, send election message to client 5006
+0:02: started election, send election message to client 5006
+0:03: ring is broken
+0:03: next hop is changed to client 5006
+ Sleeping for random time 236 ms
+0:03: started election, send election message to client 5006
+0:03: ring is broken
+0:03: next hop is changed to client 5006
+ Sleeping for random time 511 ms
+0:04: ring is broken
+0:04: next hop is changed to client 5006
+0:04: started election, send election message to client 5006
+ Sleeping for random time 38 ms
+0:04: started election, send election message to client 5006
+0:04: ring is broken
+NAK received from 5006
+NAK received from 5008
+NAK received from 5010
+0:05: ring is broken
+0:05: next hop is changed to client 5006
+ Sleeping for random time 1 ms
+0:05: started election, send election message to client 5006
+0:05: ring is broken
+0:05: next hop is changed to client 5006
+ Sleeping for random time 830 ms
+0:06: ring is broken
+0:06: next hop is changed to client 5006
+ Sleeping for random time 452 ms
+0:06: started election, send election message to client 5006
+0:06: started election, send election message to client 5006
+0:06: ring is broken
+0:06: next hop is changed to client 5006
+ Sleeping for random time 9 ms
+0:06: started election, send election message to client 5006
+0:07: ring is broken
+NAK received from 5006
+NAK received from 5008
+NAK received from 5010
+0:07: ring is broken
+0:07: next hop is changed to client 5006
+ Sleeping for random time 493 ms
+0:08: ring is broken
+0:08: next hop is changed to client 5006
+ Sleeping for random time 919 ms
+0:08: ring is broken
+0:08: next hop is changed to client 5006
+ Sleeping for random time 259 ms
+0:09: started election, send election message to client 5006
+0:09: started election, send election message to client 5006
+0:09: ring is broken
+0:09: next hop is changed to client 5006
+ Sleeping for random time 169 ms
+0:09: started election, send election message to client 5006
+0:09: ring is broken
+0:09: next hop is changed to client 5006
+ Sleeping for random time 875 ms
+0:10: ring is broken
+0:10: next hop is changed to client 5006
+ Sleeping for random time 315 ms
+0:10: started election, send election message to client 5006
+0:10: started election, send election message to client 5006
+0:10: ring is broken
+0:10: next hop is changed to client 5006
+ Sleeping for random time 658 ms
+0:11: ring is broken
+0:11: next hop is changed to client 5006
+ Sleeping for random time 867 ms
+0:11: started election, send election message to client 5006
+0:12: ring is broken
+NAK received from 5006
+NAK received from 5008
+NAK received from 5010
+0:12: ring is broken
+0:12: next hop is changed to client 5006
+ Sleeping for random time 779 ms
+0:13: ring is broken
+0:13: next hop is changed to client 5006
+ Sleeping for random time 335 ms
+0:13: started election, send election message to client 5006
+0:13: started election, send election message to client 5006
+0:13: ring is broken
+0:13: next hop is changed to client 5006
+ Sleeping for random time 934 ms
+0:14: ring is broken
+0:14: next hop is changed to client 5006
+ Sleeping for random time 699 ms
+0:14: started election, send election message to client 5006
+0:14: ring is broken
+0:14: next hop is changed to client 5006
+ Sleeping for random time 605 ms
+0:14: started election, send election message to client 5006
+0:15: ring is broken
+0:15: next hop is changed to client 5006
+ Sleeping for random time 397 ms
+0:15: started election, send election message to client 5006
+0:15: previous hop is changed to client 5010
+0:15: started election, send election message to client 5006
+0:16: ring is broken
+0:16: next hop is changed to client 5006
+ Sleeping for random time 981 ms
+0:16: previous hop is changed to client 5010
+0:16: relayed election message, leader: client 5010
+0:16: token [7404] was received 
+0:16: token [7404] was sent to client 5006
+0:16: post "N6_M1 5" from client 5006 was relayed 
+0:16: post "N10_M1 15" from client 5010 was relayed 
+0:17: post "N8_M1 17" from client 5008 was relayed 
+0:17: started election, send election message to client 5006
+0:20: post "N8_M2 20" from client 5008 was relayed 
+0:20: post "N4_M1 20" was sent
+0:20: post "N4_M1 20" was delivered to all successfully
+0:20: post "N6_M2 20" from client 5006 was relayed 
+0:21: post "N6_M3 21" from client 5006 was relayed 
+0:22: post "N4_M2 22" was sent
+0:22: post "N4_M2 22" was delivered to all successfully
+0:22: post "N6_M4 22" from client 5006 was relayed 
+0:22: post "N10_M2 22" from client 5010 was relayed 
+0:30: post "N8_M3 30" from client 5008 was relayed 
+0:39: post "N4_M3 39" was sent
+0:39: post "N4_M3 39" was delivered to all successfully
+0:39: post "N10_M3 39" from client 5010 was relayed 
+0:40: post "N8_M4 40" from client 5008 was relayed 
+0:51: post "N4_M3 51" was sent
+0:51: post "N4_M3 51" was delivered to all successfully
+0:54: post "N4_M4 54" was sent
+0:54: post "N4_M4 54" was delivered to all successfully
+0:55: post "N6_M5 55" from client 5006 was relayed 
+0:56: post "N8_M5 56" from client 5008 was relayed 

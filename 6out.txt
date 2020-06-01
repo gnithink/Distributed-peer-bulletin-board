@@ -1,0 +1,159 @@
+0:00: previous hop is changed to client 5010
+0:00: previous hop is changed to client 5004
+I am the first node in the ring now 5006
+NAK received from 5010
+SENDED NAK to 5010
+0:01: previous hop is changed to client 5004
+0:02: ring is broken
+0:02: previous hop is changed to client 5004
+0:02: next hop is changed to client 5008
+ Sleeping for random time 736 ms
+next hop is 5008  election starter 5004
+0:02: relayed election message, replaced leader 
+0:02: previous hop is changed to client 5004
+0:02: started election, send election message to client 5008
+next hop is 5008  election starter 5004
+0:02: relayed election message, replaced leader 
+next hop is 5008  election starter 5004
+0:02: relayed election message, replaced leader 
+0:03: previous hop is changed to client 5004
+next hop is 5008  election starter 5004
+0:03: relayed election message, replaced leader 
+0:03: previous hop is changed to client 5004
+0:04: ring is broken
+0:04: previous hop is changed to client 5004
+0:04: next hop is changed to client 5008
+next hop is 5008  election starter 5004
+0:04: relayed election message, replaced leader 
+ Sleeping for random time 145 ms
+next hop is 5008  election starter 5004
+0:04: relayed election message, replaced leader 
+0:04: started election, send election message to client 5008
+SENDED NAK to 5004
+0:05: ring is broken
+0:05: next hop is changed to client 5008
+ Sleeping for random time 970 ms
+0:05: previous hop is changed to client 5004
+next hop is 5008  election starter 5004
+0:05: relayed election message, replaced leader 
+0:05: ring is broken
+0:05: previous hop is changed to client 5004
+0:05: next hop is changed to client 5008
+ Sleeping for random time 584 ms
+0:06: started election, send election message to client 5008
+0:06: ring is broken
+0:06: previous hop is changed to client 5004
+0:06: next hop is changed to client 5008
+ Sleeping for random time 934 ms
+0:06: started election, send election message to client 5008
+next hop is 5008  election starter 5004
+0:06: relayed election message, replaced leader 
+next hop is 5008  election starter 5004
+0:06: relayed election message, replaced leader 
+0:06: previous hop is changed to client 5004
+next hop is 5008  election starter 5004
+0:06: relayed election message, replaced leader 
+0:07: started election, send election message to client 5008
+SENDED NAK to 5004
+0:07: ring is broken
+0:07: next hop is changed to client 5008
+ Sleeping for random time 967 ms
+0:07: previous hop is changed to client 5004
+0:08: ring is broken
+0:08: next hop is changed to client 5008
+0:08: previous hop is changed to client 5004
+ Sleeping for random time 858 ms
+0:08: started election, send election message to client 5008
+0:08: ring is broken
+0:08: next hop is changed to client 5008
+0:08: previous hop is changed to client 5004
+ Sleeping for random time 653 ms
+next hop is 5008  election starter 5004
+0:09: relayed election message, replaced leader 
+0:09: started election, send election message to client 5008
+next hop is 5008  election starter 5004
+0:09: relayed election message, replaced leader 
+0:09: previous hop is changed to client 5004
+0:09: started election, send election message to client 5008
+next hop is 5008  election starter 5004
+0:09: relayed election message, replaced leader 
+0:09: previous hop is changed to client 5004
+0:10: ring is broken
+0:10: next hop is changed to client 5008
+0:10: previous hop is changed to client 5004
+ Sleeping for random time 962 ms
+next hop is 5008  election starter 5004
+0:10: relayed election message, replaced leader 
+next hop is 5008  election starter 5004
+0:10: relayed election message, replaced leader 
+0:10: previous hop is changed to client 5004
+0:11: started election, send election message to client 5008
+0:11: ring is broken
+0:11: next hop is changed to client 5008
+0:11: previous hop is changed to client 5004
+ Sleeping for random time 390 ms
+next hop is 5008  election starter 5004
+0:11: relayed election message, replaced leader 
+0:11: started election, send election message to client 5008
+SENDED NAK to 5004
+0:12: ring is broken
+0:12: next hop is changed to client 5008
+ Sleeping for random time 125 ms
+0:12: previous hop is changed to client 5004
+0:12: started election, send election message to client 5008
+0:13: ring is broken
+0:13: previous hop is changed to client 5004
+0:13: next hop is changed to client 5008
+ Sleeping for random time 180 ms
+0:13: started election, send election message to client 5008
+next hop is 5008  election starter 5004
+0:13: relayed election message, replaced leader 
+next hop is 5008  election starter 5004
+0:13: relayed election message, replaced leader 
+0:13: previous hop is changed to client 5004
+0:14: ring is broken
+0:14: next hop is changed to client 5008
+0:14: previous hop is changed to client 5004
+ Sleeping for random time 90 ms
+0:14: started election, send election message to client 5008
+next hop is 5008  election starter 5004
+0:14: relayed election message, replaced leader 
+0:14: previous hop is changed to client 5004
+next hop is 5008  election starter 5004
+0:14: relayed election message, replaced leader 
+0:15: previous hop is changed to client 5004
+next hop is 5008  election starter 5004
+0:15: relayed election message, replaced leader 
+next hop is 5008  election starter 5004
+0:15: relayed election message, replaced leader 
+0:16: ring is broken
+0:16: previous hop is changed to client 5004
+0:16: next hop is changed to client 5008
+ Sleeping for random time 726 ms
+0:16: relayed election message, leader: client 5010
+0:16: token [7404] was received 
+0:16: post "N6_M1 5" was sent
+0:16: post "N6_M1 5" was delivered to all successfully
+0:16: token [7404] was sent to client 5008
+0:16: post "N10_M1 15" from client 5010 was relayed 
+0:16: started election, send election message to client 5008
+0:16: post "N8_M1 17" from client 5008 was relayed 
+0:19: post "N8_M2 20" from client 5008 was relayed 
+0:19: post "N4_M1 20" from client 5004 was relayed 
+0:20: post "N6_M2 20" was sent
+0:20: post "N6_M2 20" was delivered to all successfully
+0:21: post "N6_M3 21" was sent
+0:21: post "N6_M3 21" was delivered to all successfully
+0:21: post "N4_M2 22" from client 5004 was relayed 
+0:22: post "N6_M4 22" was sent
+0:22: post "N6_M4 22" was delivered to all successfully
+0:22: post "N10_M2 22" from client 5010 was relayed 
+0:29: post "N8_M3 30" from client 5008 was relayed 
+0:38: post "N4_M3 39" from client 5004 was relayed 
+0:39: post "N10_M3 39" from client 5010 was relayed 
+0:39: post "N8_M4 40" from client 5008 was relayed 
+0:50: post "N4_M3 51" from client 5004 was relayed 
+0:53: post "N4_M4 54" from client 5004 was relayed 
+0:55: post "N6_M5 55" was sent
+0:55: post "N6_M5 55" was delivered to all successfully
+0:55: post "N8_M5 56" from client 5008 was relayed 
