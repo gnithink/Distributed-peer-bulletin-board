@@ -1,0 +1,14 @@
+0:15: next hop is changed to client 3455
+0:17: ring is broken
+0:17: next hop is changed to client 3455
+0:17: previous hop is changed to client 3455
+0:18: relayed election message, leader: client 3455
+0:18: token [46658] was received 
+0:18: post "hello" was sent
+0:18: post "hello" was delivered to all successfully
+0:18: token [46658] was sent to client 3455
+0:18: post "hello" from client 3455 was relayed 
+0:25: previous hop is changed to client 3459
+0:35: previous hop is changed to client 3450
+0:49: ring is broken
+0:50: next hop is changed to client 3455

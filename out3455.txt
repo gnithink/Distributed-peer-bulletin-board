@@ -1,0 +1,24 @@
+0:07: ring is broken
+0:09: ring is broken
+0:11: ring is broken
+0:13: ring is broken
+0:15: previous hop is changed to client 3453
+0:17: ring is broken
+0:17: previous hop is changed to client 3453
+0:17: next hop is changed to client 3453
+ Sleeping for random time 422 ms
+0:18: started election, send election message to client 3453
+ELECTED PACKET SENT 
+0:18: leader selected
+0:18: new token generated [46658]
+0:18: token [46658] was sent to client 3453
+0:18: post "hello" from client 3453 was relayed 
+0:18: post "hello" was sent
+0:18: post "hello" was delivered to all successfully
+0:48: post "goodbye" was sent
+0:50: ring is broken
+0:50: previous hop is changed to client 3453
+0:52: ring is broken
+0:54: ring is broken
+0:56: ring is broken
+0:58: ring is broken

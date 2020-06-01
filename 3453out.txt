@@ -1,0 +1,52 @@
+0:15: next hop is changed to client 3456
+0:17: ring is broken
+0:19: ring is broken
+0:20: next hop is changed to client 3458
+0:20: previous hop is changed to client 3461
+0:22: ring is broken
+0:22: previous hop is changed to client 3451
+0:22: next hop is changed to client 3456
+ Sleeping for random time 127 ms
+0:22: started election, send election message to client 3456
+0:22: relayed election message, leader: client 3461
+0:22: post "N1_M2 20" from client 3451 was relayed 
+0:22: post "N1_M3 21" from client 3451 was relayed 
+0:22: post "N1_M4 22" from client 3451 was relayed 
+0:22: token [99962] was received 
+0:22: post "N2_M1 17" was sent
+0:22: post "N2_M1 17" was delivered to all successfully
+0:22: post "N2_M2 20" was sent
+0:22: post "N2_M2 20" was delivered to all successfully
+0:22: token [99962] was sent to client 3456
+0:22: post "N3_M2 22" from client 3456 was relayed 
+0:22: post "N4_M1 20" from client 3458 was relayed 
+0:22: post "N4_M2 22" from client 3458 was relayed 
+0:30: post "N2_M3 30" was sent
+0:30: post "N2_M3 30" was sent
+0:30: post "N2_M3 30" was delivered to all successfully
+Message is not what was sent out  same as msg_post_time 30000
+0:30: post "N5_M1 31" from client 3461 was relayed 
+0:36: post "N5_M2 37" from client 3461 was relayed 
+0:39: post "N3_M3 39" from client 3456 was relayed 
+0:39: post "N4_M3 39" from client 3458 was relayed 
+0:40: post "N2_M4 40" was sent
+0:40: post "N2_M4 40" was delivered to all successfully
+0:42: ring is broken
+0:42: previous hop is changed to client 3451
+0:42: next hop is changed to client 3458
+ Sleeping for random time 9 ms
+0:42: started election, send election message to client 3458
+0:42: relayed election message, leader: client 3461
+0:42: token [62585] was received 
+0:42: token [62585] was sent to client 3458
+0:44: post "N5_M3 45" from client 3461 was relayed 
+0:52: ring is broken
+0:52: next hop is changed to client 3458
+0:52: previous hop is changed to client 3458
+0:52: relayed election message, leader: client 3458
+0:52: token [58706] was received 
+0:52: token [58706] was sent to client 3458
+0:52: post "N4_M3 51" from client 3458 was relayed 
+0:54: post "N4_M3 54" from client 3458 was relayed 
+0:57: ring is broken
+0:59: ring is broken

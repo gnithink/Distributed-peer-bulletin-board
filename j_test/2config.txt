@@ -1,4 +1,4 @@
 client_port: 5000-5010
 my_port: 5002
 join_time: 0:10
-leave_time: 0:59
+leave_time: 0:20

@@ -150,7 +150,8 @@ public class ring extends Exception {
     static long tat_start_time = -1;
     static long tat_end_time = -1;
     static long TAT = -1;
-    static long ring_broken_timeout = 500;
+    static long ring_broken_timeout = 2000;
+    static int state = -1;
 
     // For fixing node dynamics\
     static int received_port = -1;
@@ -161,6 +162,7 @@ public class ring extends Exception {
         cmdLineArgsParser(args); // 8
         configFileParser(configScan, config); // 9
         inputFileParser(inputScan, input); //14 
+        // setupSocket(my_port);
         Thread.sleep(join_time);
         try{   
             setupSocket(my_port);
@@ -198,15 +200,17 @@ public class ring extends Exception {
             int to_send_port;
             Probe probe_packet;
             is_leader_elected = false;
+            int count = 0;
             
             for (int i = 0; i < ports_array.size(); i++){
 
                 try{
+                    probing_handshake_success = false;
                     to_send_port = ports_array.get(i);
                     probe_packet = new Probe(my_port, packet_id);
                     packet_id++;
                     send_packet(to_send_port, probe_packet);
-                    Thread.sleep(15);
+                    Thread.sleep(50);
                 }
                 catch (Exception e){
                     System.out.println("Error while sending probe packet");
@@ -216,8 +220,9 @@ public class ring extends Exception {
                     break;
                 }
             }
+            
 
-            if(probing_handshake_success){
+            if(probing_handshake_success && next_hop != -1 && previous_hop != -1){
                 try{
                     int random_time = random_timeout.nextInt(1000);
                     LOG += " Sleeping for random time " + random_time +" ms\n";
@@ -257,12 +262,13 @@ public class ring extends Exception {
             while(System.currentTimeMillis() - recv_timer < leave_time){
                 try{
                     recv_packet = (Packet) receive_packet();
-
-                    if(recv_packet.m_id == 10){ // PROBE
+                    
+                    if(recv_packet.m_id == 10 ){ // PROBE
                         // if(!received_probes_set.contains(recv_packet.s_id) ){
                         //     LOG += "PROBE received from " + recv_packet.s_id + "\n";
                         // }
                         // received_probes_set.add(recv_packet.s_id);
+                        state = 0;
 
                         if(previous_hop == -1){
                             // if(!sent_ack_set.contains(recv_packet.s_id)){
@@ -278,18 +284,18 @@ public class ring extends Exception {
                             send_packet(recv_packet.s_id, ack);
                         }
 
-                        else if(previous_hop > my_port){
-                            if(received_port < my_port){
-                                previous_hop = received_port;
-                                LOG += get_time_to_print() + " previous hop is changed to client " + previous_hop + "\n";
-                                LOG += "I am the first node in the ring now " + my_port + "\n" ;
-                                ProbeAck ack = new ProbeAck(my_port, packet_id);
-                                packet_id++;
-                                send_packet(previous_hop, ack);
-                            }
-                        }                        
+                        // else if(previous_hop > my_port && previous_hop != -1){
+                        //     if(received_port < my_port){
+                        //         previous_hop = received_port;
+                        //         LOG += get_time_to_print() + " previous hop is changed to client " + previous_hop + "\n";
+                        //         LOG += "I am the first node in the ring now " + my_port + "\n" ;
+                        //         ProbeAck ack = new ProbeAck(my_port, packet_id);
+                        //         packet_id++;
+                        //         send_packet(previous_hop, ack);
+                        //     }
+                        // }                        
                         else if( Math.floorMod(recv_packet.s_id - my_port, end_port - start_port) > Math
-                        .floorMod(previous_hop - my_port, end_port - start_port) || received_port == previous_hop){
+                        .floorMod(previous_hop - my_port, end_port - start_port) && previous_hop != -1){
                             
                             
                             // if(!sent_ack_set.contains(recv_packet.s_id)){
@@ -305,10 +311,10 @@ public class ring extends Exception {
                             
                         }
                         else{
-                            if(!sent_nak_set.contains(recv_packet.s_id)){
-                                LOG += "SENDED NAK to " + recv_packet.s_id + "\n";
-                            }
-                            sent_nak_set.add(recv_packet.s_id);
+                            // if(!sent_nak_set.contains(recv_packet.s_id)){
+                            //     LOG += "SENDED NAK to " + recv_packet.s_id + "\n";
+                            // }
+                            // sent_nak_set.add(recv_packet.s_id);
 
                             ProbeNak nak = new ProbeNak(my_port, packet_id);
                             packet_id++;
@@ -342,115 +348,133 @@ public class ring extends Exception {
                     }
 
                     else if(recv_packet.m_id == 12){
-                        if(!received_ack_set.contains(recv_packet.s_id) ){
-                            LOG += "NAK received from " + recv_packet.s_id + "\n";
-                        }
-                        received_ack_set.add(recv_packet.s_id);
+                        // if(!received_ack_set.contains(recv_packet.s_id) ){
+                        //     LOG += "NAK received from " + recv_packet.s_id + "\n";
+                        // }
+                        // received_ack_set.add(recv_packet.s_id);
                     }
 
                     if(!probing_handshake_success){
                         continue;
-                    }
-
-                    if(recv_packet.m_id == 20 && !is_leader_elected){
-                        Election recv_election = (Election) recv_packet;
-                        
-                        if( my_port > recv_election.best_client_id){
-                            recv_election.best_client_id = my_port;
-                            LOG += "next hop is " + next_hop +  "  election starter " + recv_election.s_id + "\n"; 
-                            LOG += get_time_to_print() +" relayed election message, replaced leader \n";
-                            Election temp_election = new Election(recv_election.s_id, recv_election.election_id, my_port);  
-                            send_packet(next_hop, temp_election);
-
-                        }
-                        else if(my_port < recv_election.best_client_id){
-                            
-                            // LOG += "next hop is " + next_hop +  "  election starter " + recv_election.s_id + "\n"; 
-                            LOG += get_time_to_print() +" relayed election message, leader: client " + recv_election.best_client_id + "\n";
-                            // Election temp_election = new Election(recv_election.s_id, recv_election.election_id, recv_election.s_id);
-                            send_packet(next_hop, recv_election);
-                            
-                        }
-                        else {
-                            
-                            Elected elected = new Elected(recv_election.s_id, recv_election.election_id, my_port);
-                            packet_id++;
-                            LOG += "ELECTED PACKET SENT \n";
-                            
-                            
-                            send_packet(next_hop, elected);
-                        }
-                          
-                    }
-                    else if(recv_packet.m_id == 21){
-                        Elected recv_elected = (Elected) recv_packet;
-
-                        if(my_port < recv_elected.leader_id){
-                            is_leader_elected = true;
-                            send_packet(next_hop, recv_elected);
-                        }
-                        else if (my_port > recv_elected.leader_id){
-                            is_leader_elected = false;
-                            send_packet(next_hop, recv_elected);
-                            
-                        }
-                        else if(recv_elected.leader_id == my_port){
-                            LOG += get_time_to_print() + " leader selected\n";
-                            token_id = recv_elected.election_id;
-                            is_leader_elected = true;
-
-                            LOG += get_time_to_print() + " new token generated [" + token_id + "]\n"; 
-                            send_messages();
-                        }
                         
                     }
-                    if(!is_leader_elected){
-                        continue;
-                    }
 
-                    if(recv_packet.m_id == 30){
-                        Token recv_token = (Token) recv_packet;
-                        token_time_stamp = System.currentTimeMillis() - start_time;
+                    
+                    if (probing_handshake_success){
 
-                        token_id = recv_token.token_id;
-                        if(!known_tokens.contains(token_id)){
-                            LOG += get_time_to_print() + " token [" + token_id + "] was received \n";
-                        }
-                        send_messages();
+                        if(recv_packet.m_id == 20 && !is_leader_elected && next_hop != -1 && previous_hop != -1){
+                            Election recv_election = (Election) recv_packet;
+                            state = 1;
+                            
+                            if( my_port > recv_election.best_client_id){
+                                recv_election.best_client_id = my_port;
+                                LOG += "next hop is " + next_hop +  "  election starter " + recv_election.s_id + "\n"; 
+                                LOG += get_time_to_print() +" relayed election message, replaced leader \n";
+                                Election temp_election = new Election(recv_election.s_id, recv_election.election_id, my_port);  
+                                send_packet(next_hop, temp_election);
 
-                    }
-                    else if(recv_packet.m_id == 0 && received_port == previous_hop ){
-                        Post recv_post = (Post) recv_packet;
-
-                        if(recv_post.s_id == my_port){
-                            if(!messages_map.containsKey(recv_post.seq_no)){
-                                LOG += "Message is not what was sent out " + " same as msg_post_time " +recv_post.seq_no + "\n";
                             }
-                            else{
-                                LOG += get_time_to_print() + " post \"" + recv_post.message + "\" was delivered to all successfully\n";
-                                messages_map.remove(recv_post.seq_no);
-                                tat_end_time = System.currentTimeMillis();
-                                TAT = tat_end_time - tat_start_time;
-                                // LOG += "TAT time is " + TAT  + "\n";
-                                if (TAT == 0){
-                                    TAT = 500;
-                                }
-                                ring_broken_timeout = TAT * 10;
+                            else if(my_port < recv_election.best_client_id){
+                                
+                                // LOG += "next hop is " + next_hop +  "  election starter " + recv_election.s_id + "\n"; 
+                                LOG += get_time_to_print() +" relayed election message, leader: client " + recv_election.best_client_id + "\n";
+                                // Election temp_election = new Election(recv_election.s_id, recv_election.election_id, recv_election.s_id);
+                                send_packet(next_hop, recv_election);
+                                
+                            }
+                            else {
+                                
+                                Elected elected = new Elected(recv_election.s_id, recv_election.election_id, my_port);
+                                packet_id++;
+                                LOG += "ELECTED PACKET SENT \n";
+                                
+                                
+                                send_packet(next_hop, elected);
+                            }
+                            
+                        }
+                        else if(recv_packet.m_id == 21 && next_hop != -1 && previous_hop != -1){
+                            Elected recv_elected = (Elected) recv_packet;
+
+                            if(my_port < recv_elected.leader_id){
+                                is_leader_elected = true;
+                                send_packet(next_hop, recv_elected);
+                            }
+                            else if (my_port > recv_elected.leader_id){
+                                is_leader_elected = false;
+                                send_packet(next_hop, recv_elected);
+                                
+                            }
+                            else if(recv_elected.leader_id == my_port){
+                                LOG += get_time_to_print() + " leader selected\n";
+                                token_id = recv_elected.election_id;
+                                is_leader_elected = true;
+
+                                LOG += get_time_to_print() + " new token generated [" + token_id + "]\n"; 
                                 send_messages();
                             }
+                            
                         }
-                        else{
-                            LOG += get_time_to_print() + " post \"" + recv_post.message + "\" from client " + recv_post.s_id + " was relayed \n";
-                            send_packet(next_hop, recv_post);
+                        // if(!is_leader_elected){
+                        //     continue;
+                        // }
+                        
+
+                        if(recv_packet.m_id == 30 && next_hop != -1 && previous_hop != -1){
+                            Token recv_token = (Token) recv_packet;
+                            token_time_stamp = System.currentTimeMillis() - start_time;
+
+                            token_id = recv_token.token_id;
+                            if(!known_tokens.contains(token_id)){
+                                LOG += get_time_to_print() + " token [" + token_id + "] was received \n";
+                            }
+                            send_messages();
 
                         }
+                        else if(recv_packet.m_id == 0 && received_port == previous_hop && next_hop != -1 && previous_hop != -1){
+                            Post recv_post = (Post) recv_packet;
+                            
 
+                            if(recv_post.s_id == my_port){
+                                if(!messages_map.containsKey(recv_post.seq_no)){
+                                    LOG += "Message is not what was sent out " + " same as msg_post_time " +recv_post.seq_no + "\n";
+                                }
+                                else{
+                                    LOG += get_time_to_print() + " post \"" + recv_post.message + "\" was delivered to all successfully\n";
+                                    messages_map.remove(recv_post.seq_no);
+                                    tat_end_time = System.currentTimeMillis();
+                                    TAT = tat_end_time - tat_start_time;
+                                    // LOG += "TAT time is " + TAT  + "\n";
+                                    if (TAT == 0){
+                                        TAT = 50;
+                                    }
+                                    ring_broken_timeout = TAT * 2;
+                                    send_messages();
+                                }
+                            }
+                            else{
+                                LOG += get_time_to_print() + " post \"" + recv_post.message + "\" from client " + recv_post.s_id + " was relayed \n";
+                                send_packet(next_hop, recv_post);
+
+                            }
+
+                        }
                     }
 
                 }
                 catch (SocketTimeoutException e){
                     LOG += get_time_to_print() + " ring is broken\n";
+
                     resetting_static_variables(); // resetting so that probing process can continue
+                    try{
+                    Thread.sleep(100- TAT);
+                    }
+                    catch (InterruptedException f){
+                        f.printStackTrace();
+
+                    }
+                    // recv_messages = new receive_thread();
+                    // recv_messages.start();
                     send_messages = new send_thread();
                     send_messages.start();
                     
@@ -791,7 +815,7 @@ public class ring extends Exception {
         tat_start_time = -1;
         tat_end_time = -1;
         TAT = -1;
-        ring_broken_timeout = 500; // waits for 2 seconds to call socket timeout exception
+        ring_broken_timeout = 2000; // waits for 2 seconds to call socket timeout exception
 
         // For fixing node dynamics
         received_port = -1;

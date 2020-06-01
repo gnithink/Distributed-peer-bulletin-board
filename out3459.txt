@@ -1,0 +1,8 @@
+0:25: next hop is changed to client 3453
+0:27: ring is broken
+0:29: ring is broken
+0:32: ring is broken
+0:34: ring is broken
+0:37: ring is broken
+0:37: next hop is changed to client 3450
+0:39: ring is broken
