@@ -1,47 +1,73 @@
+0:01: ring is broken
 0:02: ring is broken
+0:03: ring is broken
 0:04: ring is broken
 0:05: previous hop is changed to client 3456
-0:07: ring is broken
-0:07: next hop is changed to client 3456
-0:07: previous hop is changed to client 3456
-0:08: relayed election message, leader: client 3456
-0:08: token [29392] was received 
-0:08: post "N1_M1 5" was sent
-0:08: post "N1_M1 5" was delivered to all successfully
-0:08: token [29392] was sent to client 3456
+0:06: ring is broken
+0:06: previous hop is changed to client 3456
+ACK received from 3456
+0:06: next hop is changed to client 3456
+ Sleeping for random time 11 ms
+0:06: relayed election message, leader: client 3456
+0:06: token [94571] was received 
+0:06: post "N1_M1 5" was sent
+0:06: post "N1_M1 5" was delivered to all successfully
+0:06: token [94571] was sent to client 3456
 0:15: post "N3_M1 15" from client 3456 was relayed 
+0:16: ring is broken
+ACK received from 3453
+0:16: next hop is changed to client 3453
+ Sleeping for random time 0 ms
+0:16: started election, send election message to client 3453
+0:16: previous hop is changed to client 3456
+0:16: relayed election message, leader: client 3456
+0:16: token [7983] was received 
+0:16: token [7983] was sent to client 3453
+0:16: post "N2_M1 17" from client 3453 was relayed 
 0:18: previous hop is changed to client 3458
+0:19: ring is broken
+0:19: previous hop is changed to client 3458
+ACK received from 3453
+0:19: next hop is changed to client 3453
+ Sleeping for random time 94 ms
+0:19: relayed election message, leader: client 3458
+0:19: token [68026] was received 
+0:19: token [68026] was sent to client 3453
+0:19: post "N2_M2 20" from client 3453 was relayed 
 0:20: post "N1_M2 20" was sent
+0:20: post "N1_M2 20" was delivered to all successfully
+0:20: post "N4_M1 20" from client 3458 was relayed 
+0:20: previous hop is changed to client 3461
+0:21: previous hop is changed to client 3461
 0:22: ring is broken
-0:22: next hop is changed to client 3453
 0:22: previous hop is changed to client 3461
+ACK received from 3453
+0:22: next hop is changed to client 3453
 0:22: relayed election message, leader: client 3461
-0:22: token [99962] was received 
-0:22: post "N1_M2 20" was sent
-0:22: post "N1_M2 20" was delivered to all successfully
+ Sleeping for random time 17 ms
+0:22: relayed election message, leader: client 3461
+0:22: token [8770] was received 
 0:22: post "N1_M3 21" was sent
 0:22: post "N1_M3 21" was delivered to all successfully
 0:22: post "N1_M4 22" was sent
 0:22: post "N1_M4 22" was delivered to all successfully
-0:22: token [99962] was sent to client 3453
-0:22: post "N2_M1 17" from client 3453 was relayed 
-0:22: post "N2_M2 20" from client 3453 was relayed 
+0:22: token [8770] was sent to client 3453
 0:22: post "N3_M2 22" from client 3456 was relayed 
-0:22: post "N4_M1 20" from client 3458 was relayed 
 0:22: post "N4_M2 22" from client 3458 was relayed 
-0:30: post "N2_M3 30" from client 3453 was relayed 
-0:30: post "N2_M3 30" from client 3453 was relayed 
-0:30: post "N5_M1 31" from client 3461 was relayed 
-0:36: post "N5_M2 37" from client 3461 was relayed 
-0:39: post "N3_M3 39" from client 3456 was relayed 
+0:29: post "N2_M3 30" from client 3453 was relayed 
+0:31: post "N5_M1 31" from client 3461 was relayed 
+0:37: post "N5_M2 37" from client 3461 was relayed 
 0:39: post "N4_M3 39" from client 3458 was relayed 
-0:40: post "N2_M4 40" from client 3453 was relayed 
-0:42: ring is broken
-0:42: previous hop is changed to client 3461
-0:42: next hop is changed to client 3453
- Sleeping for random time 777 ms
-0:42: relayed election message, leader: client 3461
-0:42: token [62585] was received 
-0:42: token [62585] was sent to client 3453
-0:43: started election, send election message to client 3453
-0:44: post "N5_M3 45" from client 3461 was relayed 
+0:39: post "N3_M3 39" from client 3456 was relayed 
+0:39: post "N2_M4 40" from client 3453 was relayed 
+0:41: ring is broken
+0:41: previous hop is changed to client 3461
+ACK received from 3453
+0:41: next hop is changed to client 3453
+ Sleeping for random time 28 ms
+0:41: relayed election message, leader: client 3461
+0:41: relayed election message, leader: client 3461
+0:41: relayed election message, leader: client 3461
+0:41: token [32278] was received 
+0:41: token [32278] was sent to client 3453
+0:45: post "N5_M3 45" from client 3461 was relayed 

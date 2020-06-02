@@ -1,8 +1,38 @@
+ACK received from 3453
 0:25: next hop is changed to client 3453
+ Sleeping for random time 4 ms
+0:25: started election, send election message to client 3453
+0:26: ring is broken
+0:26: previous hop is changed to client 3455
+NAK received from 3455
+ACK received from 3453
+0:26: next hop is changed to client 3453
+ Sleeping for random time 7 ms
+0:26: started election, send election message to client 3453
 0:27: ring is broken
-0:29: ring is broken
-0:32: ring is broken
-0:34: ring is broken
-0:37: ring is broken
-0:37: next hop is changed to client 3450
-0:39: ring is broken
+ACK received from 3453
+0:27: next hop is changed to client 3453
+ Sleeping for random time 43 ms
+0:27: previous hop is changed to client 3455
+0:27: started election, send election message to client 3453
+ELECTED PACKET SENT 
+0:27: leader selected
+0:27: new token generated [64115]
+0:27: token [64115] was sent to client 3453
+0:27: post "hello" was sent
+0:27: post "hello" was delivered to all successfully
+0:36: ring is broken
+ACK received from 3450
+0:36: next hop is changed to client 3450
+ Sleeping for random time 45 ms
+0:36: previous hop is changed to client 3455
+0:36: started election, send election message to client 3450
+next hop is 3450  election starter 3455
+0:36: relayed election message, replaced leader 
+ELECTED PACKET SENT 
+0:36: leader selected
+0:36: new token generated [93698]
+0:36: token [93698] was sent to client 3450
+0:37: post "hello, goodbye" from client 3450 was relayed 
+0:38: post "goodbye" was sent
+0:38: post "goodbye" was delivered to all successfully
