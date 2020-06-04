@@ -567,7 +567,6 @@ public class ring extends Exception {
         received_packet_object = OIS_REC.readObject();
 
         OIS_REC.close();
-        BIS_REC.close();
         return received_packet_object;
 
     }
