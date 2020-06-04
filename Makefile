@@ -34,21 +34,37 @@ clean:
 
 rmout:
 	$(RM) *.txt
-	lsof -i:5005 -t | xargs kill
-	lsof -i:5004 -t | xargs kill
-	lsof -i:5006 -t | xargs kill
-	lsof -i:5008 -t | xargs kill
-	lsof -i:5010 -t | xargs kill
-	lsof -i:5002 -t | xargs kill
+	# lsof -i:5005 -t | xargs kill
+	# lsof -i:5004 -t | xargs kill
+	# lsof -i:5006 -t | xargs kill
+	# lsof -i:5008 -t | xargs kill
+	# lsof -i:5010 -t | xargs kill
+	# lsof -i:5002 -t | xargs kill
 
 
-	lsof -i:3451 -t | xargs kill
-	lsof -i:3450 -t | xargs kill
-	lsof -i:3456 -t | xargs kill
-	lsof -i:3458 -t | xargs kill
-	lsof -i:3461 -t | xargs kill
-	lsof -i:3455 -t | xargs kill
-	lsof -i:3459 -t | xargs kill
+	# lsof -i:3451 -t | xargs kill
+	# lsof -i:3450 -t | xargs kill
+	# lsof -i:3456 -t | xargs kill
+	# lsof -i:3458 -t | xargs kill
+	# lsof -i:3461 -t | xargs kill
+	# lsof -i:3455 -t | xargs kill
+	# lsof -i:3459 -t | xargs kill
+
+	kill -9 $(lsof -t -i:5005)
+	kill -9 $(lsof -t -i:5008)
+	kill -9 $(lsof -t -i:5010)
+	kill -9 $(lsof -t -i:5002)
+	kill -9 $(lsof -t -i:5004)
+	kill -9 $(lsof -t -i:5006)
+	
+
+	kill -9 $(lsof -t -i:3451)
+	kill -9 $(lsof -t -i:3450)
+	kill -9 $(lsof -t -i:3456)
+	kill -9 $(lsof -t -i:3458)
+	kill -9 $(lsof -t -i:3461)
+	kill -9 $(lsof -t -i:3455)
+	kill -9 $(lsof -t -i:3459)
 	
 
 
