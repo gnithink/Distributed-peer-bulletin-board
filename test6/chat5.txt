@@ -1,0 +1,6 @@
+0:15	Tommy: 	1 This is Tommy	15
+0:20	Tommy: 	2 Hello			20
+0:21	Tommy: 	3 Hello			21
+0:26	Tommy: 	4 Hello			26
+0:26	Tommy: 	5 Hello			26
+0:26	Tommy: 	6 Hello			26
