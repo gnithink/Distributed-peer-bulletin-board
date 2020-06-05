@@ -92,7 +92,7 @@ public class ring extends Exception {
     static int next_hop = -1;
     static int previous_hop = -1;
     static boolean probing_handshake_success = false;
-    static long sleep = 1000;
+    
 
     // start and end port also used to to create ports array
     static int start_port = -1; 
@@ -126,15 +126,23 @@ public class ring extends Exception {
     static int election_id; // this election id is used for the token id as well while generating the token
     static int token_id = -1;
     static long token_time_stamp = -1 ; // used to get messages that we supposed to be posted before each election
-    static SortedSet<Integer> known_tokens = new TreeSet<Integer>(); 
     static long ring_broken_timeout = 1000; // waits for 1 second to call socket timeout exception
     static boolean election_started = false;
+
+    // to fix duplicate messages
+    static SortedSet<Integer> known_tokens = new TreeSet<Integer>(); 
+    static SortedSet<Integer> known_election_messages = new TreeSet<Integer>();
+    static SortedSet<Integer> known_post_messages = new TreeSet<Integer>();
+    static long prev_seq_no = -1;
+    static String prev_message_to_post = "";
 
     // For fixing node dynamics\
     static int received_port = -1;
     static long message_start_time = -1;
     static long message_end_time = -1;
     static long turn_around_time = -1;
+
+    
 
     public static void main(String[] args) throws Exception, IllegalArgumentException{
         
@@ -222,7 +230,10 @@ public class ring extends Exception {
                     
                     Election election_packet =  new Election(my_port, election_id, my_port);
                     send_packet(next_hop, election_packet);
-                    LOG += get_time_to_print() + " started election, send election message to client " + next_hop + "\n";
+                    if(!known_election_messages.contains(election_id)){
+                        LOG += get_time_to_print() + " started election, send election message to client " + next_hop + "\n";
+                        known_election_messages.add(election_id);
+                        }
                     }
                     
                 }
@@ -319,10 +330,10 @@ public class ring extends Exception {
                     }
 
                     else if(recv_packet.m_id == 12){
-                        if(!received_ack_set.contains(recv_packet.s_id) ){
-                            LOG += "NAK received from " + recv_packet.s_id + "\n";
-                        }
-                        received_ack_set.add(recv_packet.s_id);
+                        // if(!received_ack_set.contains(recv_packet.s_id) ){
+                        //     LOG += "NAK received from " + recv_packet.s_id + "\n";
+                        // }
+                        // received_ack_set.add(recv_packet.s_id);
                     }
 
                     if(!probing_handshake_success){
@@ -347,8 +358,10 @@ public class ring extends Exception {
                         }
                         else if(my_port < recv_election.best_client_id){
                             election_started = true;
-        
-                            LOG += get_time_to_print() +" relayed election message, leader: client " + recv_election.best_client_id + "\n";
+                            if(!known_election_messages.contains(recv_election.election_id)){
+                                LOG += get_time_to_print() +" relayed election message, leader: client " + recv_election.best_client_id + "\n";
+                                // LOG += "election ID " + recv_election.election_id + "\n";
+                            }
                             send_packet(next_hop, recv_election);
                         }
                         else{
@@ -409,12 +422,13 @@ public class ring extends Exception {
                                 LOG += "Message key " + recv_post.seq_no +" is not present in the message map " + recv_post.message + "\n";
                             }
                             else{
+                                
                                 LOG += get_time_to_print() + " post \"" + recv_post.message + "\" was delivered to all successfully\n";
                                 messages_map.remove(recv_post.seq_no);
                                 message_end_time = System.currentTimeMillis();
                                 turn_around_time = message_end_time - message_start_time;
 
-                                if (100 * turn_around_time > 1000){
+                                if (100 * turn_around_time > 2000){
                                     ring_broken_timeout = 100 * turn_around_time;
                                     // LOG += "100 * TAT is " + ring_broken_timeout + "\n";
                                 }
@@ -426,7 +440,12 @@ public class ring extends Exception {
                             }
                         }
                         else{
-                            LOG += get_time_to_print() + " post \"" + recv_post.message + "\" from client " + recv_post.s_id + " was relayed \n";
+                            if(prev_seq_no != recv_post.seq_no || !prev_message_to_post.equals(recv_post.message)){
+                                LOG += get_time_to_print() + " post \"" + recv_post.message + "\" from client " + recv_post.s_id + " was relayed \n";
+                                // to detect duplicate messages with the same time stamp.
+                                prev_seq_no = recv_post.seq_no;
+                                prev_message_to_post = recv_post.message;
+                            }
                             send_packet(next_hop, recv_post);
 
                         }
@@ -435,7 +454,7 @@ public class ring extends Exception {
 
                 }
                 catch (SocketTimeoutException e){
-
+                    // LOG += "ring broken timeout " + ring_broken_timeout + "\n";
                     resetting_static_variables(); // resetting so that probing process can continue
                     try{
                     Thread.sleep(10);
@@ -493,13 +512,19 @@ public class ring extends Exception {
         }
         else{
             Long message_post_time = messages_election_time.firstKey();
+
             long seq_no = message_post_time;
             String message_to_post = messages_election_time.get(message_post_time);
 
             Post post = new Post(my_port, seq_no, message_to_post);
             send_packet(next_hop, post);
 
-            LOG += get_time_to_print() + " post \"" + message_to_post + "\" was sent\n";
+            if(prev_seq_no != seq_no || !message_to_post.equals(prev_message_to_post)){
+                LOG += get_time_to_print() + " post \"" + message_to_post + "\" was sent\n";
+                prev_seq_no = seq_no;
+                prev_message_to_post = message_to_post;
+            }
+
             message_start_time = System.currentTimeMillis();
         }
 
@@ -768,7 +793,6 @@ public class ring extends Exception {
         next_hop = -1;
         previous_hop = -1;
         probing_handshake_success = false;
-        sleep = 1000;
 
         // List of sets to for error checking 
         received_nak_set.clear(); 
@@ -784,6 +808,7 @@ public class ring extends Exception {
         token_id = -1;
         token_time_stamp = -1 ; // used to get messages that we supposed to be posted before each election
         known_tokens.clear();
+        known_election_messages.clear();
 
         // For fixing node dynamics
         received_port = -1;

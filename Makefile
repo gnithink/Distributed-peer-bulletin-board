@@ -47,26 +47,26 @@ ring.class: ring.java
 
 clean:
 	$(RM) *.class
-	$(RM) *.txt
+	# $(RM) *.txt
 
 rmout:
 	$(RM) *.txt
 	
-	lsof -i:5005 -t | xargs kill
-	lsof -i:5004 -t | xargs kill
-	lsof -i:5006 -t | xargs kill
-	lsof -i:5008 -t | xargs kill
-	lsof -i:5010 -t | xargs kill
-	lsof -i:5002 -t | xargs kill
+	# lsof -i:5005 -t | xargs kill
+	# lsof -i:5004 -t | xargs kill
+	# lsof -i:5006 -t | xargs kill
+	# lsof -i:5008 -t | xargs kill
+	# lsof -i:5010 -t | xargs kill
+	# lsof -i:5002 -t | xargs kill
 
 
-	lsof -i:3451 -t | xargs kill
-	lsof -i:3450 -t | xargs kill
-	lsof -i:3456 -t | xargs kill
-	lsof -i:3458 -t | xargs kill
-	lsof -i:3461 -t | xargs kill
-	lsof -i:3455 -t | xargs kill
-	lsof -i:3459 -t | xargs kill
+	# lsof -i:3451 -t | xargs kill
+	# lsof -i:3450 -t | xargs kill
+	# lsof -i:3456 -t | xargs kill
+	# lsof -i:3458 -t | xargs kill
+	# lsof -i:3461 -t | xargs kill
+	# lsof -i:3455 -t | xargs kill
+	# lsof -i:3459 -t | xargs kill
 
 	# kill -9 $(p1)
 	# kill -9 $(p2)
