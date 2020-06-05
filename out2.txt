@@ -3,8 +3,8 @@
 0:06: next hop is changed to client 3451
 0:06: started election, send election message to client 3451
 0:06: leader selected
-0:06: new token generated 33545
-0:06: token 33545 was sent to client 3451
+0:06: new token generated 35589
+0:06: token 35589 was sent to client 3451
 0:08: post "Keegan: 1 first post, visiable with K&J 	8" from client 3451 was relayed 
 0:09: post "Joshua:	1 respons to Keegan 1, visable with K&J 	9" was sent
 0:09: post "Joshua:	1 respons to Keegan 1, visable with K&J 	9" was delivered to all successfully
@@ -15,37 +15,44 @@
 0:11: next hop is changed to client 3459
 0:11: started election, send election message to client 3459
 0:11: relayed election message, leader: client 3459
-0:11: token 46302 was received 
-0:11: token 46302 was sent to client 3459
+0:11: token 79464 was received 
+0:11: token 79464 was sent to client 3459
 0:12: post "Keegan: 2 why did you post 4 times?, K&J 	12" from client 3451 was relayed 
-0:13: previous hop is changed to client 3451
 0:13: ring is broken
 0:13: next hop is changed to client 3459
 0:13: started election, send election message to client 3459
-0:13: relayed election message, leader: client 3460
-0:13: token 83734 was received 
-0:13: token 83734 was sent to client 3459
-0:14: post "Tommy: 	1 This is Tommy	15" from client 3460 was relayed 
+0:14: previous hop is changed to client 3451
+0:14: ring is broken
+0:14: next hop is changed to client 3459
+0:14: started election, send election message to client 3459
+0:14: relayed election message, leader: client 3460
+0:14: token 74665 was received 
+0:14: token 74665 was sent to client 3459
 0:15: post "James: 	1 Hi I'm James	15" from client 3459 was relayed 
+0:15: post "Tommy: 	1 This is Tommy	15" from client 3460 was relayed 
 0:16: previous hop is changed to client 3451
 0:16: ring is broken
 0:16: next hop is changed to client 3456
 0:16: relayed election message, leader: client 3460
-0:16: relayed election message, leader: client 3460
-0:16: token 24510 was received 
-0:16: token 24510 was sent to client 3456
-0:16: post "Frank:	1 I'm joining the conversation, K&J&F" from client 3456 was relayed 
-0:17: post "Keegan: 3 Hi Frank, K&J&F 					17" from client 3451 was relayed 
+0:17: relayed election message, leader: client 3460
+0:18: previous hop is changed to client 3451
+0:18: ring is broken
+0:18: next hop is changed to client 3456
+0:18: relayed election message, leader: client 3460
+0:18: post "Keegan: 3 Hi Frank, K&J&F 					17" from client 3451 was relayed 
+0:18: token 31958 was received 
+0:18: token 31958 was sent to client 3456
+0:18: post "Frank:	1 I'm joining the conversation, K&J&F" from client 3456 was relayed 
 0:19: post "Joshua: 6 Welcome Frank, K&J&F 					19" was sent
 0:19: post "Joshua: 6 Welcome Frank, K&J&F 					19" was delivered to all successfully
-0:19: post "Tommy: 	2 Hello			20" from client 3460 was relayed 
-0:20: post "Tommy: 	3 Hello			21" from client 3460 was relayed 
-0:20: post "Frank:	2 I want to have a party, K&J&F" from client 3456 was relayed 
+0:20: post "Tommy: 	2 Hello			20" from client 3460 was relayed 
 0:21: post "James: 	6 Hello			21" from client 3459 was relayed 
+0:21: post "Frank:	2 I want to have a party, K&J&F" from client 3456 was relayed 
+0:21: post "Tommy: 	3 Hello			21" from client 3460 was relayed 
 0:23: post "Keegan: 7 no Frank Covid-19, K&J&F 				23" was sent
 0:23: post "Keegan: 7 no Frank Covid-19, K&J&F 				23" was delivered to all successfully
-0:25: post "Tommy: 	6 Hello			26" from client 3460 was relayed 
-0:27: post "Frank:	3 Fine! no party then :( K&J&F" from client 3456 was relayed 
+0:26: post "Tommy: 	6 Hello			26" from client 3460 was relayed 
+0:28: post "Frank:	3 Fine! no party then :( K&J&F" from client 3456 was relayed 
 0:29: post "Joshua: 8 I'm Leaving BYE, K&J&F 					29" was sent
 0:29: post "Joshua: 8 I'm Leaving BYE, K&J&F 					29" was delivered to all successfully
 0:30: post "Keegan: 4 Guess its just us now Frank, K&F 30" from client 3451 was relayed 

@@ -34,6 +34,7 @@ import java.net.SocketTimeoutException;
 // Serializing objects
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.BufferedOutputStream;
 
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
@@ -81,14 +82,9 @@ public class ring extends Exception {
     // Bytearray Buffers and received packet object
     static int BUFFER_SIZE = 1024; // 16
  
-    static byte[] send_byte = null; // 18
-    static ByteArrayOutputStream BOS_SEND = null; // 19
-    static ObjectOutputStream OOS_SEND = null; // 20
+    
 
-    static byte[] receive_byte = null; // 22
-    static ByteArrayInputStream BIS_REC = null; // 23
-    static ObjectInputStream OIS_REC = null; // 24
-    static Object received_packet_object = null; //25
+
 
     // Node Discovery
     // unique id for each packet sent. Just increment the value after every packet sent.
@@ -249,6 +245,10 @@ public class ring extends Exception {
             while(System.currentTimeMillis() - recv_timer < leave_time){
                 try{
                     recv_packet = (Packet) receive_packet();
+                    
+                    // if (recv_packet == null){
+                    //     continue;
+                    // }
                     
                     if(recv_packet.m_id == 10 ){ // PROBE
                         // if(!received_probes_set.contains(recv_packet.s_id) ){
@@ -538,14 +538,13 @@ public class ring extends Exception {
 
     public static void send_packet(int port, Object message_packet) throws Exception { //26
         
-
-        BOS_SEND = new ByteArrayOutputStream();
-        OOS_SEND = new ObjectOutputStream(BOS_SEND);
+        byte[] send_byte = new byte[BUFFER_SIZE]; // 18
+        ByteArrayOutputStream BOS_SEND =  new ByteArrayOutputStream();
+        ObjectOutputStream OOS_SEND = new ObjectOutputStream(new BufferedOutputStream(BOS_SEND));
         OOS_SEND.flush();
         OOS_SEND.writeObject(message_packet);
         OOS_SEND.flush();
 
-        send_byte = new byte[BUFFER_SIZE];
         send_byte = BOS_SEND.toByteArray();
         packet = new DatagramPacket(send_byte, send_byte.length);
         packet.setAddress(InetAddress.getByName("localhost"));
@@ -556,19 +555,18 @@ public class ring extends Exception {
     }
 
     public static Object receive_packet() throws Exception{ // 27
-        
-        receive_byte = new byte[BUFFER_SIZE];
+
+        byte[] receive_byte = new byte[BUFFER_SIZE];
         packet = new DatagramPacket(receive_byte, receive_byte.length);
         socket.receive(packet);
         received_port = packet.getPort();
 
-        BIS_REC = new ByteArrayInputStream(receive_byte);
-        OIS_REC = new ObjectInputStream(new BufferedInputStream(BIS_REC));
-        received_packet_object = OIS_REC.readObject();
+        ByteArrayInputStream BIS_REC = new ByteArrayInputStream(receive_byte);
+        ObjectInputStream OIS_REC = new ObjectInputStream(new BufferedInputStream(BIS_REC));
+        Object received_packet_object = OIS_REC.readObject();
 
         OIS_REC.close();
         return received_packet_object;
-
     }
 
     public static void setupSocket(int my_port){
@@ -766,11 +764,6 @@ public class ring extends Exception {
         send_byte_buffer = null; // 17
         receive_buffer = null; // 21
 
-        // Timing and clock
-        send_byte = null; // 18
-    
-        receive_byte = null; // 22
-        received_packet_object = null; //25
         // Not resetting previous and next hop to see if the issue gets fixed.
         next_hop = -1;
         previous_hop = -1;

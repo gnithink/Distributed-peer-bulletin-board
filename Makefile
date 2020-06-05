@@ -50,38 +50,39 @@ clean:
 	$(RM) *.txt
 
 rmout:
+	$(RM) *.txt
 	
-	# lsof -i:5005 -t | xargs kill
-	# lsof -i:5004 -t | xargs kill
-	# lsof -i:5006 -t | xargs kill
-	# lsof -i:5008 -t | xargs kill
-	# lsof -i:5010 -t | xargs kill
-	# lsof -i:5002 -t | xargs kill
+	lsof -i:5005 -t | xargs kill
+	lsof -i:5004 -t | xargs kill
+	lsof -i:5006 -t | xargs kill
+	lsof -i:5008 -t | xargs kill
+	lsof -i:5010 -t | xargs kill
+	lsof -i:5002 -t | xargs kill
 
 
-	# lsof -i:3451 -t | xargs kill
-	# lsof -i:3450 -t | xargs kill
-	# lsof -i:3456 -t | xargs kill
-	# lsof -i:3458 -t | xargs kill
-	# lsof -i:3461 -t | xargs kill
-	# lsof -i:3455 -t | xargs kill
-	# lsof -i:3459 -t | xargs kill
+	lsof -i:3451 -t | xargs kill
+	lsof -i:3450 -t | xargs kill
+	lsof -i:3456 -t | xargs kill
+	lsof -i:3458 -t | xargs kill
+	lsof -i:3461 -t | xargs kill
+	lsof -i:3455 -t | xargs kill
+	lsof -i:3459 -t | xargs kill
 
-	kill -9 $(p1)
-	kill -9 $(p2)
-	kill -9 $(p3)
-	kill -9 $(p4)
-	kill -9 $(p5)
-	kill -9 $(p6)
+	# kill -9 $(p1)
+	# kill -9 $(p2)
+	# kill -9 $(p3)
+	# kill -9 $(p4)
+	# kill -9 $(p5)
+	# kill -9 $(p6)
 	
 
-	kill -9 $(p7)
-	kill -9 $(p8)
-	kill -9 $(p9)
-	kill -9 $(p10)
-	kill -9 $(p11)
-	kill -9 $(p12)
-	kill -9 $(p13)
+	# kill -9 $(p7)
+	# kill -9 $(p8)
+	# kill -9 $(p9)
+	# kill -9 $(p10)
+	# kill -9 $(p11)
+	# kill -9 $(p12)
+	# kill -9 $(p13)
 	
 
 

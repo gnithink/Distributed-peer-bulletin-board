@@ -5,42 +5,49 @@ NAK received from 3452
 0:13: previous hop is changed to client 3459
 0:13: relayed election message, replaced leader 3459 to 3460
 0:13: relayed election message, replaced leader 3459 to 3460
-0:13: leader selected
-0:13: new token generated 83734
-0:13: token 83734 was sent to client 3451
+0:14: previous hop is changed to client 3459
+0:14: ring is broken
+0:14: next hop is changed to client 3451
+0:14: started election, send election message to client 3451
+0:14: relayed election message, replaced leader 3459 to 3460
+0:14: relayed election message, replaced leader 3459 to 3460
+0:14: leader selected
+0:14: new token generated 74665
+0:14: token 74665 was sent to client 3451
+0:14: post "James: 	1 Hi I'm James	15" from client 3459 was relayed 
 0:15: post "Tommy: 	1 This is Tommy	15" was sent
 0:15: post "Tommy: 	1 This is Tommy	15" was delivered to all successfully
-0:15: post "James: 	1 Hi I'm James	15" from client 3459 was relayed 
 0:16: ring is broken
 0:16: next hop is changed to client 3451
-0:16: previous hop is changed to client 3459
 0:16: started election, send election message to client 3451
-0:16: relayed election message, replaced leader 3459 to 3460
-0:16: leader selected
-0:16: new token generated 24510
-0:16: token 24510 was sent to client 3451
-0:16: post "Frank:	1 I'm joining the conversation, K&J&F" from client 3456 was relayed 
-0:17: post "Keegan: 3 Hi Frank, K&J&F 					17" from client 3451 was relayed 
-0:19: post "Joshua: 6 Welcome Frank, K&J&F 					19" from client 3452 was relayed 
+0:16: previous hop is changed to client 3459
+0:17: relayed election message, replaced leader 3459 to 3460
+0:18: relayed election message, replaced leader 3459 to 3460
+0:18: relayed election message, replaced leader 3459 to 3460
+0:18: leader selected
+0:18: new token generated 31958
+0:18: token 31958 was sent to client 3451
+0:18: post "Keegan: 3 Hi Frank, K&J&F 					17" from client 3451 was relayed 
+0:18: post "Frank:	1 I'm joining the conversation, K&J&F" from client 3456 was relayed 
+0:18: post "Joshua: 6 Welcome Frank, K&J&F 					19" from client 3452 was relayed 
 0:20: post "Tommy: 	2 Hello			20" was sent
 0:20: post "Tommy: 	2 Hello			20" was delivered to all successfully
+0:20: post "James: 	6 Hello			21" from client 3459 was relayed 
+0:20: post "Frank:	2 I want to have a party, K&J&F" from client 3456 was relayed 
 0:21: post "Tommy: 	3 Hello			21" was sent
 0:21: post "Tommy: 	3 Hello			21" was delivered to all successfully
-0:21: post "Frank:	2 I want to have a party, K&J&F" from client 3456 was relayed 
-0:21: post "James: 	6 Hello			21" from client 3459 was relayed 
-0:23: post "Keegan: 7 no Frank Covid-19, K&J&F 				23" from client 3452 was relayed 
+0:22: post "Keegan: 7 no Frank Covid-19, K&J&F 				23" from client 3452 was relayed 
 0:26: post "Tommy: 	6 Hello			26" was sent
 0:26: post "Tommy: 	6 Hello			26" was delivered to all successfully
-0:28: post "Frank:	3 Fine! no party then :( K&J&F" from client 3456 was relayed 
-0:29: post "Joshua: 8 I'm Leaving BYE, K&J&F 					29" from client 3452 was relayed 
-0:30: post "Keegan: 4 Guess its just us now Frank, K&F 30" from client 3451 was relayed 
+0:27: post "Frank:	3 Fine! no party then :( K&J&F" from client 3456 was relayed 
+0:28: post "Joshua: 8 I'm Leaving BYE, K&J&F 					29" from client 3452 was relayed 
+0:29: post "Keegan: 4 Guess its just us now Frank, K&F 30" from client 3451 was relayed 
 0:31: previous hop is changed to client 3459
 0:31: ring is broken
 0:31: next hop is changed to client 3451
-0:31: started election, send election message to client 3451
 0:31: relayed election message, replaced leader 3459 to 3460
 0:31: relayed election message, replaced leader 3459 to 3460
 0:31: leader selected
-0:31: new token generated 60085
-0:31: token 60085 was sent to client 3451
-0:34: post "Frank:	4 Yeah Josh was a party pooper anyways K&F" from client 3456 was relayed 
+0:31: new token generated 66210
+0:31: token 66210 was sent to client 3451
+0:33: post "Frank:	4 Yeah Josh was a party pooper anyways K&F" from client 3456 was relayed 
