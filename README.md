@@ -1,10 +1,10 @@
 # Distributed-peer-bulletin-board
 
-CIS630, Spring 2020, Term Project II, Due date: June 6, 2020
+CIS630, Spring 2020, Term Project II, Due date: June 6, 2020 \
 
-Please complete the following information, save this file and submit it along with your program
+Please complete the following information, save this file and submit it along with your program \
 
-Your First and Last name: Nithin Krishna Gowda
+Your First and Last name: Nithin Krishna Gowda \
 Your Student ID: 951708588 
 
 What programming language did you use to write your code?
@@ -12,8 +12,8 @@ Java
 
 your code compiles on ix-dev: Yes
 
-in the absence of node dynamics: 
-	your code can form the proper ring:   Yes
+in the absence of node dynamics: \
+	your code can form the proper ring:   Yes 
 	your code is able to conduct an election: Yes
 	your code is able to deliver posts from each client to all clients: Yes
 
