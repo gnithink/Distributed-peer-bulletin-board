@@ -31,10 +31,12 @@ when nodes are removed from the ring:
 Notes:
 use "make" command to compile and generate the require .class files.
 use "make rmout" to remove all the text files the directory. 
+
     - PLEASE REMOVE ALL THE OUTPUT TEXT FILES GENERATED AFTER EVERY RUN. 
     - IF THERE ARE .txt FILES WITH THE SAME NAME AS ANY OF THE OUTPUT TEXT FILES TO BE GENERATED, THE PROGRAM WILL NOT RUN.
     - "make rmout" SIMPLY deletes all the text files in the directory. So use this command cautiously.
     - I did this to prevent overwriting of any important text files with the same name as the output files in the same directory.
     - I had all my config, input and bash script files in a separate directory so that they will not be deleted accidently when I run "make rmout".
     - Also note that the "program-2-submission-form.txt" will get deleted if "make rmout" is used.
+    
 use "make clean" to remove all the .class files.
